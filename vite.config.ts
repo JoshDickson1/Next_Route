@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
 
-export default defineConfig({
+export default defineConfig(({ isSsrBuild }) => ({
   plugins: [
     react(),
     tailwindcss(),
@@ -13,4 +13,10 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-})
+  build: {
+    outDir: isSsrBuild ? 'dist-server' : 'dist',
+    rollupOptions: isSsrBuild
+      ? { input: 'src/entry-server.tsx' }
+      : undefined,
+  },
+}))
