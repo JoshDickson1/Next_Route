@@ -5,7 +5,7 @@ import { I18nextProvider, initReactI18next, useTranslation } from "react-i18next
 import { createInstance } from "i18next";
 import * as React from "react";
 import { Suspense, createContext, forwardRef, useCallback, useContext, useEffect, useId, useImperativeHandle, useMemo, useRef, useState } from "react";
-import { Link, NavLink, Route, Routes, useNavigate } from "react-router-dom";
+import { Link, NavLink, Route, Routes } from "react-router-dom";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 import { AnimatePresence, motion, useInView, useMotionValue, useSpring } from "framer-motion";
 import { ArrowRight, ArrowUpRight, BookOpen, CheckCircle, ChevronDown, Clock, Compass, Globe, Heart, Mail, Map, MapPin, Navigation, Phone, Search, Send, Shield, Star, X, Zap } from "lucide-react";
@@ -35,125 +35,6 @@ function ThemeProvider({ children }) {
 			setTheme
 		},
 		children
-	});
-}
-function useTheme() {
-	const ctx = useContext(ThemeContext);
-	if (!ctx) throw new Error("useTheme must be inside ThemeProvider");
-	return ctx;
-}
-//#endregion
-//#region src/lib/utils.ts
-function cn(...inputs) {
-	return twMerge(clsx(inputs));
-}
-//#endregion
-//#region src/components/ui/CutoutButton.tsx
-function CutoutButton({ children, icon, onClick, href, className, size = 52 }) {
-	const { resolvedTheme } = useTheme();
-	const isDark = resolvedTheme === "dark";
-	const Tag = href ? "a" : "button";
-	const glass = isDark ? {
-		background: "linear-gradient(180deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.04) 100%)",
-		backdropFilter: "blur(32px) saturate(200%) brightness(1.15)",
-		WebkitBackdropFilter: "blur(32px) saturate(200%) brightness(1.15)",
-		border: "1px solid rgba(255,255,255,0.16)",
-		boxShadow: [
-			"inset 0 1.5px 0 rgba(255,255,255,0.22)",
-			"inset 0 -1px 0 rgba(0,0,0,0.25)",
-			"0 4px 24px rgba(0,0,0,0.40)",
-			"0 1px 4px rgba(0,0,0,0.22)"
-		].join(", "),
-		color: "rgba(255,255,255,0.88)"
-	} : {
-		background: "linear-gradient(180deg, #1a3566 0%, #0d1b38 100%)",
-		border: "1px solid rgba(13,27,56,0.4)",
-		boxShadow: [
-			"inset 0 1.5px 0 rgba(255,255,255,0.14)",
-			"inset 0 -1px 0 rgba(0,0,0,0.25)",
-			"0 4px 20px rgba(13,27,56,0.3)",
-			"0 1px 3px rgba(13,27,56,0.2)"
-		].join(", "),
-		color: "rgba(255,255,255,0.95)"
-	};
-	const iconBg = isDark ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.15)";
-	const iconColor = isDark ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.85)";
-	const iconSize = Math.round(size * .28);
-	const fillColor = isDark ? "rgba(255,255,255,0.95)" : "rgba(10,22,48,0.97)";
-	const fillText = isDark ? "rgba(6,6,10,0.9)" : "rgba(255,255,255,0.98)";
-	const iconColorHover = isDark ? "rgba(6,6,10,0.85)" : "rgba(255,255,255,0.95)";
-	const [hovered, setHovered] = useState(false);
-	return /* @__PURE__ */ jsxs(Tag, {
-		...href ? { href } : {},
-		...!href ? { type: "button" } : {},
-		onClick,
-		onMouseEnter: () => setHovered(true),
-		onMouseLeave: () => setHovered(false),
-		className: cn("group relative inline-flex items-center justify-center gap-2.5 rounded-full cursor-pointer select-none overflow-hidden", "transition-transform duration-[300ms] ease-out", "hover:scale-[1.02] active:scale-[0.97]", className),
-		style: {
-			height: size,
-			paddingLeft: size * .55,
-			paddingRight: size * .45,
-			fontFamily: "Satoshi, sans-serif",
-			fontSize: Math.round(size * .285),
-			fontWeight: 600,
-			letterSpacing: "0.01em",
-			...glass
-		},
-		children: [
-			/* @__PURE__ */ jsx("span", {
-				"aria-hidden": true,
-				className: "absolute inset-0 translate-x-full group-hover:translate-x-0 transition-transform duration-[480ms] ease-[cubic-bezier(0.4,0,0.2,1)]",
-				style: {
-					background: fillColor,
-					borderRadius: "inherit"
-				}
-			}),
-			/* @__PURE__ */ jsx("div", {
-				"aria-hidden": true,
-				className: "absolute inset-x-0 top-0 pointer-events-none z-10",
-				style: {
-					height: "52%",
-					background: isDark ? "linear-gradient(180deg, rgba(255,255,255,0.10) 0%, transparent 100%)" : "linear-gradient(180deg, rgba(255,255,255,0.25) 0%, transparent 100%)",
-					borderRadius: "inherit"
-				}
-			}),
-			/* @__PURE__ */ jsx("span", {
-				className: "relative z-10 whitespace-nowrap",
-				style: {
-					transition: "color 480ms cubic-bezier(0.4,0,0.2,1)",
-					color: hovered ? fillText : void 0
-				},
-				children
-			}),
-			/* @__PURE__ */ jsxs("div", {
-				className: "relative z-10 flex items-center justify-center rounded-full shrink-0 overflow-hidden",
-				style: {
-					width: size * .58,
-					height: size * .58,
-					background: iconBg,
-					boxShadow: isDark ? "inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -1px 0 rgba(0,0,0,0.2)" : "inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(0,0,0,0.06)"
-				},
-				children: [/* @__PURE__ */ jsx("span", {
-					"aria-hidden": true,
-					className: "absolute inset-0 translate-x-full group-hover:translate-x-0 transition-transform duration-[480ms] ease-[cubic-bezier(0.4,0,0.2,1)]",
-					style: {
-						background: isDark ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.2)",
-						borderRadius: "inherit"
-					}
-				}), /* @__PURE__ */ jsx("span", {
-					className: "relative z-10",
-					children: icon ?? /* @__PURE__ */ jsx(ArrowUpRight, {
-						size: iconSize,
-						strokeWidth: 2.5,
-						style: {
-							color: hovered ? iconColorHover : iconColor,
-							transition: "color 480ms cubic-bezier(0.4,0,0.2,1)"
-						}
-					})
-				})]
-			})
-		]
 	});
 }
 //#endregion
@@ -257,7 +138,7 @@ function LanguageSwitcher() {
 				stiffness: 420,
 				damping: 26
 			},
-			className: "absolute top-[calc(100%+8px)] right-0 z-50 flex flex-col gap-0.5 p-1.5 rounded-2xl min-w-[160px]",
+			className: "absolute top-[calc(100%+8px)] right-0 z-50 flex flex-col gap-0.5 p-1.5 rounded-2xl mt-5 min-w-[160px]",
 			style: {
 				background: "rgba(10,20,46,0.92)",
 				backdropFilter: "blur(24px)",
@@ -314,7 +195,17 @@ function LanguageSwitcher() {
 	});
 }
 //#endregion
+//#region src/lib/utils.ts
+function cn(...inputs) {
+	return twMerge(clsx(inputs));
+}
+//#endregion
 //#region src/components/Navbar.tsx
+var SPRING$1 = {
+	type: "spring",
+	stiffness: 400,
+	damping: 32
+};
 var NAV_LINK_KEYS = [
 	{
 		to: "/",
@@ -332,10 +223,6 @@ var NAV_LINK_KEYS = [
 	{
 		to: "/our-story",
 		key: "our_story"
-	},
-	{
-		to: "/enquiries",
-		key: "enquiries"
 	}
 ];
 function GridIcon({ size = 16 }) {
@@ -364,12 +251,11 @@ function GridIcon({ size = 16 }) {
 	});
 }
 function Navbar() {
-	const navigate = useNavigate();
 	const { t } = useTranslation();
 	const [scrolled, setScrolled] = useState(false);
 	const [mobileOpen, setMobileOpen] = useState(false);
 	useEffect(() => {
-		const onScroll = () => setScrolled(window.scrollY > 40);
+		const onScroll = () => setScrolled(window.scrollY > window.innerHeight * 1.1);
 		window.addEventListener("scroll", onScroll, { passive: true });
 		return () => window.removeEventListener("scroll", onScroll);
 	}, []);
@@ -378,23 +264,19 @@ function Navbar() {
 		children: /* @__PURE__ */ jsxs(motion.div, {
 			animate: {
 				paddingTop: scrolled ? 10 : 14,
-				paddingBottom: scrolled ? 10 : 14
+				paddingBottom: scrolled ? 10 : 14,
+				background: scrolled ? "rgba(13,27,56,0.92)" : "rgba(255,255,255,0.20)",
+				borderColor: scrolled ? "rgba(255,255,255,0.10)" : "rgba(255,255,255,0.50)",
+				boxShadow: scrolled ? "0 20px 60px rgba(0,0,0,0.4)" : "0 0px 0px rgba(0,0,0,0)"
 			},
 			transition: {
-				duration: .3,
+				duration: .35,
 				ease: "easeOut"
 			},
-			className: "pointer-events-auto mt-4 flex items-center justify-between gap-2 px-5 rounded-full w-[calc(100vw-48px)] md:w-auto",
+			className: "pointer-events-auto border mt-4 flex items-center justify-between gap-2 px-5 rounded-full w-[calc(100vw-48px)] md:w-auto",
 			style: {
-				background: "rgba(13, 27, 56, 0.55)",
-				backdropFilter: "blur(80px) saturate(220%) brightness(0.9)",
-				WebkitBackdropFilter: "blur(80px) saturate(220%) brightness(0.9)",
-				borderTop: "1px solid rgba(255,255,255,0.14)",
-				borderLeft: "1px solid rgba(255,255,255,0.08)",
-				borderRight: "1px solid rgba(255,255,255,0.08)",
-				borderBottom: "1px solid rgba(255,255,255,0.04)",
-				boxShadow: "0 4px 24px rgba(0,0,0,0.25)",
-				transition: "none"
+				backdropFilter: "blur(80px) saturate(200%)",
+				WebkitBackdropFilter: "blur(80px) saturate(200%)"
 			},
 			children: [
 				/* @__PURE__ */ jsx(Link, {
@@ -417,7 +299,7 @@ function Navbar() {
 						to,
 						end,
 						children: ({ isActive }) => /* @__PURE__ */ jsxs("div", {
-							className: "relative px-3 py-1.5",
+							className: "relative text-green-600 px-3 py-1.5",
 							children: [isActive && /* @__PURE__ */ jsx(motion.div, {
 								layoutId: "nav-active-pill",
 								className: "absolute inset-0 rounded-full bg-white",
@@ -441,15 +323,45 @@ function Navbar() {
 					className: "flex items-center gap-2 ml-2",
 					children: [
 						/* @__PURE__ */ jsx("div", {
-							className: "hidden lg:block",
+							className: "block",
 							children: /* @__PURE__ */ jsx(LanguageSwitcher, {})
 						}),
 						/* @__PURE__ */ jsx("div", {
 							className: "hidden sm:block shrink-0",
-							children: /* @__PURE__ */ jsx(CutoutButton, {
-								size: 40,
-								onClick: () => navigate("/enquiries"),
-								children: t("nav.book")
+							children: /* @__PURE__ */ jsx(Link, {
+								to: "/enquiries",
+								children: /* @__PURE__ */ jsxs(motion.span, {
+									className: `inline-flex items-center gap-2.5 pl-4 pr-1 py-1 rounded-full cursor-pointer transition-colors duration-300 ${scrolled ? "bg-white text-[#0d1b38] shadow-[0_8px_24px_-6px_rgba(255,255,255,.25)]" : "bg-[#0d1b38] text-white shadow-[0_8px_24px_-6px_rgba(13,27,56,.5)]"}`,
+									variants: {
+										rest: { y: 0 },
+										hover: { y: -1 }
+									},
+									initial: "rest",
+									whileHover: "hover",
+									whileTap: { scale: .97 },
+									transition: SPRING$1,
+									children: [/* @__PURE__ */ jsx("span", {
+										className: "text-[13px] font-semibold whitespace-nowrap",
+										style: { fontFamily: "Satoshi, sans-serif" },
+										children: t("nav.book")
+									}), /* @__PURE__ */ jsx(motion.span, {
+										className: `w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors duration-300 ${scrolled ? "bg-[#0d1b38] text-white" : "bg-white text-[#0d1b38]"}`,
+										variants: {
+											rest: { x: 0 },
+											hover: { x: 2 }
+										},
+										transition: SPRING$1,
+										children: /* @__PURE__ */ jsx("svg", {
+											width: "14",
+											height: "14",
+											viewBox: "0 0 24 24",
+											fill: "none",
+											stroke: "currentColor",
+											strokeWidth: "2",
+											children: /* @__PURE__ */ jsx("path", { d: "M5 12h14M13 6l6 6-6 6" })
+										})
+									})]
+								})
 							})
 						}),
 						/* @__PURE__ */ jsx("button", {
@@ -506,35 +418,54 @@ function Navbar() {
 		},
 		children: /* @__PURE__ */ jsxs("nav", {
 			className: "flex flex-col gap-1",
-			children: [
-				NAV_LINK_KEYS.map(({ to, key, end }) => /* @__PURE__ */ jsx(NavLink, {
-					to,
-					end,
-					onClick: () => setMobileOpen(false),
-					children: ({ isActive }) => /* @__PURE__ */ jsx("div", {
-						className: cn("px-4 py-3 rounded-xl text-[15px] font-semibold", isActive ? "bg-white text-[#0d1b38]" : "text-white/60 hover:text-white hover:bg-white/10"),
-						style: {
-							fontFamily: "Satoshi, sans-serif",
-							transition: "background 150ms, color 150ms"
-						},
-						children: t(`nav.${key}`)
-					})
-				}, to)),
-				/* @__PURE__ */ jsx(Link, {
-					to: "/enquiries",
-					onClick: () => setMobileOpen(false),
-					className: "mt-1 flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl text-white text-[15px] font-bold",
+			children: [NAV_LINK_KEYS.map(({ to, key, end }) => /* @__PURE__ */ jsx(NavLink, {
+				to,
+				end,
+				onClick: () => setMobileOpen(false),
+				children: ({ isActive }) => /* @__PURE__ */ jsx("div", {
+					className: cn("px-4 py-3 rounded-xl text-[15px] font-semibold", isActive ? "bg-white text-[#0d1b38]" : "text-white/60 hover:text-white hover:bg-white/10"),
 					style: {
 						fontFamily: "Satoshi, sans-serif",
-						background: "linear-gradient(135deg, #1a3566 0%, #0d1b38 100%)"
+						transition: "background 150ms, color 150ms"
 					},
-					children: t("nav.book")
-				}),
-				/* @__PURE__ */ jsx("div", {
-					className: "mt-2 px-2 pb-1",
-					children: /* @__PURE__ */ jsx(LanguageSwitcher, {})
+					children: t(`nav.${key}`)
 				})
-			]
+			}, to)), /* @__PURE__ */ jsx(Link, {
+				to: "/enquiries",
+				onClick: () => setMobileOpen(false),
+				children: /* @__PURE__ */ jsxs(motion.div, {
+					className: "mt-1 flex items-center gap-3 pl-5 pr-1 py-1 rounded-full bg-white text-[#0d1b38] w-max cursor-pointer",
+					variants: {
+						rest: { y: 0 },
+						hover: { y: -1 }
+					},
+					initial: "rest",
+					whileHover: "hover",
+					whileTap: { scale: .97 },
+					transition: SPRING$1,
+					children: [/* @__PURE__ */ jsx("span", {
+						className: "flex-1 text-[15px] font-bold",
+						style: { fontFamily: "Satoshi, sans-serif" },
+						children: t("nav.book")
+					}), /* @__PURE__ */ jsx(motion.span, {
+						className: "w-9 h-9 rounded-full bg-[#0d1b38] text-white flex items-center justify-center shrink-0",
+						variants: {
+							rest: { x: 0 },
+							hover: { x: 2 }
+						},
+						transition: SPRING$1,
+						children: /* @__PURE__ */ jsx("svg", {
+							width: "14",
+							height: "14",
+							viewBox: "0 0 24 24",
+							fill: "none",
+							stroke: "currentColor",
+							strokeWidth: "2",
+							children: /* @__PURE__ */ jsx("path", { d: "M5 12h14M13 6l6 6-6 6" })
+						})
+					})]
+				})
+			})]
 		})
 	}, "menu")] }) })] });
 }
@@ -603,137 +534,6 @@ var Input = React.forwardRef(({ className, type, ...props }, ref) => {
 	});
 });
 Input.displayName = "Input";
-//#endregion
-//#region src/components/Logo.tsx
-function Logo({ variant = "default", size = "md" }) {
-	const isWhite = variant === "white";
-	const navy = isWhite ? "#ffffff" : "#1a2f5a";
-	const blue = isWhite ? "#a8cce8" : "#4a90d9";
-	const blueLight = isWhite ? "rgba(255,255,255,0.6)" : "#7ab5e0";
-	const subColor = isWhite ? "rgba(255,255,255,0.55)" : "rgba(26,47,90,0.45)";
-	const cfg = {
-		sm: {
-			w: 32,
-			h: 31,
-			fontSize: 12,
-			subSize: 6.5,
-			gap: 7
-		},
-		md: {
-			w: 46,
-			h: 44,
-			fontSize: 16,
-			subSize: 7.5,
-			gap: 10
-		},
-		lg: {
-			w: 62,
-			h: 59,
-			fontSize: 21,
-			subSize: 9.5,
-			gap: 13
-		}
-	}[size];
-	return /* @__PURE__ */ jsxs("div", {
-		className: "flex items-center",
-		style: { gap: cfg.gap },
-		children: [/* @__PURE__ */ jsxs("svg", {
-			width: cfg.w,
-			height: cfg.h,
-			viewBox: "0 0 148 140",
-			fill: "none",
-			xmlns: "http://www.w3.org/2000/svg",
-			children: [
-				/* @__PURE__ */ jsx("path", {
-					fillRule: "evenodd",
-					clipRule: "evenodd",
-					fill: navy,
-					d: "\n            M 55 4\n            C 29 4  8 25  8 51\n            C  8 80 55 122 55 122\n            C 55 122 102 80 102 51\n            C 102 25  81 4  55 4 Z\n\n            M 55 23\n            C 42 23  31 34  31 47\n            C 31 61  42 72  55 72\n            C 68 72  79 61  79 47\n            C 79 34  68 23  55 23 Z\n          "
-				}),
-				/* @__PURE__ */ jsx("path", {
-					fill: blue,
-					d: "\n            M 124 9\n            C 108 17  89 29  70 42\n            C 53 54  36 65  27 78\n            L 31 84\n            C 42 72  59 61  76 49\n            C 95 36 114 24 126 16\n            Z\n          "
-				}),
-				/* @__PURE__ */ jsx("path", {
-					fill: blueLight,
-					opacity: "0.9",
-					d: "\n            M 115 24\n            C 99 33  80 45  61 58\n            C 44 70  28 81  19 94\n            L 23 98\n            C 34 86  50 75  67 63\n            C 86 50 105 38 117 30\n            Z\n          "
-				}),
-				/* @__PURE__ */ jsxs("g", {
-					transform: "translate(124,11) rotate(45)",
-					children: [
-						/* @__PURE__ */ jsx("path", {
-							fill: navy,
-							d: "\n              M 0 -15\n              C -2.5 -15  -3 -9  -3 0\n              C -3  9  -2  13  -1.5 16\n              L  1.5 16\n              C  2  13   3  9   3  0\n              C  3 -9   2.5 -15  0 -15 Z\n            "
-						}),
-						/* @__PURE__ */ jsx("path", {
-							fill: navy,
-							d: "M -3 -1  L -17  7  L -15  10  L -3  5  L 3  5  L 15  10  L 17  7  L 3 -1 Z"
-						}),
-						/* @__PURE__ */ jsx("path", {
-							fill: navy,
-							d: "M -2 10  L -8 15  L -7 17  L -2 13  L 2 13  L 7 17  L 8 15  L 2 10 Z"
-						})
-					]
-				})
-			]
-		}), /* @__PURE__ */ jsxs("div", {
-			className: "flex flex-col",
-			style: { lineHeight: 1 },
-			children: [/* @__PURE__ */ jsxs("div", {
-				className: "flex items-baseline",
-				style: { gap: 5 },
-				children: [/* @__PURE__ */ jsx("span", {
-					style: {
-						fontFamily: "'Clash Display', sans-serif",
-						fontWeight: 700,
-						fontSize: cfg.fontSize,
-						letterSpacing: "0.06em",
-						color: navy,
-						textTransform: "uppercase"
-					},
-					children: "NEXT"
-				}), /* @__PURE__ */ jsx("span", {
-					style: {
-						fontFamily: "'Clash Display', sans-serif",
-						fontWeight: 700,
-						fontSize: cfg.fontSize,
-						letterSpacing: "0.06em",
-						color: blue,
-						textTransform: "uppercase"
-					},
-					children: "ROUTE"
-				})]
-			}), /* @__PURE__ */ jsxs("div", {
-				className: "flex items-center mt-[5px]",
-				style: { gap: 5 },
-				children: [
-					/* @__PURE__ */ jsx("div", { style: {
-						height: 1,
-						width: 14,
-						backgroundColor: subColor
-					} }),
-					/* @__PURE__ */ jsx("span", {
-						style: {
-							fontFamily: "'Satoshi', sans-serif",
-							fontWeight: 500,
-							fontSize: cfg.subSize,
-							letterSpacing: "0.28em",
-							color: subColor,
-							textTransform: "uppercase"
-						},
-						children: "TRAVELS"
-					}),
-					/* @__PURE__ */ jsx("div", { style: {
-						height: 1,
-						width: 14,
-						backgroundColor: subColor
-					} })
-				]
-			})]
-		})]
-	});
-}
 //#endregion
 //#region src/components/Footer.tsx
 var NAV_COLS = [
@@ -838,12 +638,13 @@ function NextRouteWordmark() {
 		style: { height: fontSize > 0 ? visibleHeight : 80 },
 		"aria-hidden": true,
 		children: fontSize > 0 && /* @__PURE__ */ jsx("p", {
-			className: "absolute -top-5 text-blue-950 left-0 font-black whitespace-nowrap",
+			className: "absolute -top-5 left-0 font-black whitespace-nowrap",
 			style: {
 				fontFamily: "Clash Display, sans-serif",
 				fontSize,
 				lineHeight: 1,
-				letterSpacing: "-0.02em"
+				letterSpacing: "-0.02em",
+				color: "rgba(255,255,255,0.05)"
 			},
 			children: "NEXT ROUTE"
 		})
@@ -852,8 +653,6 @@ function NextRouteWordmark() {
 function Footer() {
 	const { t } = useTranslation();
 	const year = (/* @__PURE__ */ new Date()).getFullYear();
-	const { resolvedTheme } = useTheme();
-	const isDark = resolvedTheme === "dark";
 	const [email, setEmail] = useState("");
 	const [sent, setSent] = useState(false);
 	const cardRef = useRef(null);
@@ -894,24 +693,34 @@ function Footer() {
 		className: "mt-24 px-4 sm:px-6 pb-0",
 		children: [/* @__PURE__ */ jsxs("div", {
 			ref: cardRef,
-			className: "max-w-5xl mx-auto rounded-3xl border border-border/50 bg-card overflow-hidden",
+			className: "max-w-5xl mx-auto rounded-3xl overflow-hidden",
+			style: {
+				background: "linear-gradient(160deg, #0d1b38 0%, #112248 60%, #0d1b38 100%)",
+				border: "1px solid rgba(255,255,255,0.08)"
+			},
 			children: [
 				/* @__PURE__ */ jsxs("div", {
 					className: "px-8 pt-10 pb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1fr_auto_auto_auto_auto] gap-10",
 					children: [/* @__PURE__ */ jsxs(motion.div, {
-						className: "space-y-5",
+						className: "space-y-6",
 						...fade(0),
 						children: [
 							/* @__PURE__ */ jsx(Link, {
 								to: "/",
-								children: /* @__PURE__ */ jsx(Logo, {
-									variant: isDark ? "white" : "default",
-									size: "md"
+								className: "block -ml-9",
+								children: /* @__PURE__ */ jsx("img", {
+									src: "/assets/logo.png",
+									alt: "Next Route Travels",
+									className: "h-12 w-auto object-contain",
+									style: { mixBlendMode: "screen" }
 								})
 							}),
 							/* @__PURE__ */ jsx("p", {
-								className: "text-sm text-muted-foreground max-w-[240px] leading-relaxed",
-								style: { fontFamily: "Satoshi, sans-serif" },
+								className: "text-sm max-w-[240px] leading-relaxed",
+								style: {
+									fontFamily: "Satoshi, sans-serif",
+									color: "rgba(255,255,255,0.5)"
+								},
 								children: t("footer.tagline")
 							}),
 							/* @__PURE__ */ jsx("div", {
@@ -921,7 +730,11 @@ function Footer() {
 									target: "_blank",
 									rel: "noopener noreferrer",
 									"aria-label": label,
-									className: "flex items-center justify-center bg-slate-800 text-white w-9 h-9 rounded-xl text-muted-foreground hover:text-white hover:bg-slate-700 transition-colors ease-in duration-[600ms]",
+									className: "flex items-center justify-center w-9 h-9 rounded-xl text-white/60 hover:text-white transition-colors ease-in duration-[400ms]",
+									style: {
+										background: "rgba(255,255,255,0.08)",
+										border: "1px solid rgba(255,255,255,0.08)"
+									},
 									children: /* @__PURE__ */ jsx(Icon, { size: 16 })
 								}, href))
 							})
@@ -934,15 +747,21 @@ function Footer() {
 								className: "w-1/2 sm:w-auto space-y-4",
 								...fade(.1 + colIdx * .08),
 								children: [/* @__PURE__ */ jsx("p", {
-									className: "text-[12px] font-extrabold tracking-[0.2em] text-slate-900 uppercase",
-									style: { fontFamily: "Satoshi, sans-serif" },
+									className: "text-[12px] font-extrabold tracking-[0.2em] uppercase",
+									style: {
+										fontFamily: "Satoshi, sans-serif",
+										color: "rgba(255,255,255,0.9)"
+									},
 									children: t(headingKey)
 								}), /* @__PURE__ */ jsx("ul", {
 									className: "space-y-3",
 									children: links.map((link) => /* @__PURE__ */ jsx("li", { children: /* @__PURE__ */ jsx(Link, {
 										to: link.to,
-										className: "text-sm text-muted-foreground hover:text-foreground transition-colors ease-in duration-[600ms]",
-										style: { fontFamily: "Satoshi, sans-serif" },
+										className: "text-sm hover:text-white transition-colors ease-in duration-[400ms]",
+										style: {
+											fontFamily: "Satoshi, sans-serif",
+											color: "rgba(255,255,255,0.45)"
+										},
 										children: t(link.labelKey)
 									}) }, link.labelKey))
 								})]
@@ -950,26 +769,35 @@ function Footer() {
 						})
 					})]
 				}),
-				/* @__PURE__ */ jsx("div", { className: "mx-8 border-t border-border/40" }),
+				/* @__PURE__ */ jsx("div", {
+					className: "mx-8",
+					style: { borderTop: "1px solid rgba(255,255,255,0.08)" }
+				}),
 				/* @__PURE__ */ jsxs(motion.div, {
 					className: "px-8 py-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4",
 					...fade(.18),
 					children: [/* @__PURE__ */ jsxs("p", {
-						className: "text-[12px] text-muted-foreground/60",
-						style: { fontFamily: "Satoshi, sans-serif" },
+						className: "text-[12px]",
+						style: {
+							fontFamily: "Satoshi, sans-serif",
+							color: "rgba(255,255,255,0.3)"
+						},
 						children: [
 							sent ? t("footer.newsletter_success") : t("footer.copyright", { year }),
 							" ",
 							/* @__PURE__ */ jsx("span", {
-								className: "font-semibold text-foreground/60",
+								style: {
+									color: "rgba(255,255,255,0.5)",
+									fontWeight: 600
+								},
 								children: "BiTech."
 							})
 						]
 					}), /* @__PURE__ */ jsxs("div", {
 						className: "relative flex items-center w-full sm:w-[280px] rounded-full overflow-hidden",
 						style: {
-							background: isDark ? "#000" : "#fff",
-							border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.1)",
+							background: "rgba(255,255,255,0.06)",
+							border: "1px solid rgba(255,255,255,0.12)",
 							height: 52
 						},
 						children: [/* @__PURE__ */ jsx(Input, {
@@ -978,13 +806,13 @@ function Footer() {
 							value: email,
 							onChange: (e) => setEmail(e.target.value),
 							onKeyDown: (e) => e.key === "Enter" && handleSend(),
-							className: `h-full flex-1 border-0 bg-transparent text-sm focus-visible:ring-0 focus-visible:ring-offset-0 pl-5 pr-14 ${isDark ? "text-white/80 placeholder:text-white/25" : "text-black/70 placeholder:text-black/30"}`,
+							className: "h-full flex-1 border-0 bg-transparent text-sm focus-visible:ring-0 focus-visible:ring-offset-0 pl-5 pr-14 text-white/75 placeholder:text-white/25",
 							style: { fontFamily: "Satoshi, sans-serif" }
 						}), /* @__PURE__ */ jsxs(motion.button, {
 							type: "button",
 							onClick: handleSend,
 							whileHover: "hover",
-							className: `absolute right-1.5 flex items-center justify-center rounded-full shrink-0 cursor-pointer overflow-hidden ${isDark ? "bg-white" : "bg-gradient-to-br from-blue-900 to-blue-950"}`,
+							className: "absolute right-1.5 flex items-center justify-center rounded-full shrink-0 cursor-pointer overflow-hidden bg-white",
 							style: {
 								width: 38,
 								height: 38
@@ -1022,7 +850,7 @@ function Footer() {
 								children: /* @__PURE__ */ jsx(Send, {
 									size: 15,
 									strokeWidth: 2,
-									className: isDark ? "text-black" : "text-white"
+									className: "text-[#0d1b38]"
 								})
 							}), /* @__PURE__ */ jsx(motion.span, {
 								variants: { hover: {
@@ -1044,7 +872,7 @@ function Footer() {
 								children: /* @__PURE__ */ jsx(Send, {
 									size: 15,
 									strokeWidth: 2,
-									className: isDark ? "text-black" : "text-white"
+									className: "text-[#0d1b38]"
 								})
 							})]
 						})]
@@ -1982,9 +1810,9 @@ var STATS = [
 	}
 ];
 var TYPE_COLORS = {
-	"Flight": "text-blue-500",
-	"Road Travel": "text-emerald-500",
-	"Expedition": "text-amber-500"
+	"Flight": "text-[#a8cce8]",
+	"Road Travel": "text-emerald-400",
+	"Expedition": "text-amber-400"
 };
 var TYPE_KEYS = {
 	"Flight": "locations_globe.flight",
@@ -1998,9 +1826,40 @@ var REGION_KEYS$1 = {
 	"Africa": "locations_globe.africa",
 	"Asia": "locations_globe.asia"
 };
+var TICKER_ITEMS = [
+	...LOCATIONS,
+	...LOCATIONS,
+	...LOCATIONS
+];
+function fadeUp$5(delay = 0) {
+	return {
+		initial: {
+			opacity: 0,
+			y: 36
+		},
+		whileInView: {
+			opacity: 1,
+			y: 0
+		},
+		viewport: {
+			once: false,
+			margin: "-80px"
+		},
+		transition: {
+			duration: .65,
+			ease: [
+				.22,
+				1,
+				.36,
+				1
+			],
+			delay
+		}
+	};
+}
 function CountUp({ to, suffix }) {
 	const ref = useRef(null);
-	const isInView = useInView(ref, {
+	const inView = useInView(ref, {
 		once: false,
 		margin: "-80px"
 	});
@@ -2009,29 +1868,28 @@ function CountUp({ to, suffix }) {
 		stiffness: 60,
 		damping: 20
 	});
-	const [display, setDisplay] = useState(0);
+	const [val, setVal] = useState(0);
 	useEffect(() => {
-		if (isInView) mv.set(to);
+		mv.set(inView ? to : 0);
 	}, [
-		isInView,
+		inView,
 		mv,
 		to
 	]);
-	useEffect(() => {
-		return spring.on("change", (v) => setDisplay(Math.round(v)));
-	}, [spring]);
+	useEffect(() => spring.on("change", (v) => setVal(Math.round(v))), [spring]);
 	return /* @__PURE__ */ jsxs("span", {
 		ref,
-		children: [display, suffix]
+		children: [val, suffix]
 	});
 }
 function GlobeMap() {
 	return /* @__PURE__ */ jsx("div", {
-		className: "md:h-[780px] h-[310px] w-full",
+		className: "h-[460px] md:h-[960px] w-full",
 		children: /* @__PURE__ */ jsxs(Map$1, {
 			center: [HUB.lng, HUB.lat],
 			zoom: 1.4,
 			projection: { type: "globe" },
+			theme: "light",
 			interactive: true,
 			scrollZoom: false,
 			doubleClickZoom: true,
@@ -2042,229 +1900,202 @@ function GlobeMap() {
 					paint: {
 						"line-color": "#3b82f6",
 						"line-width": 1.5,
-						"line-dasharray": [2, 2]
+						"line-dasharray": [2, 2],
+						"line-opacity": .7
 					},
 					interactive: false
 				}),
 				/* @__PURE__ */ jsx(MapMarker, {
 					longitude: HUB.lng,
 					latitude: HUB.lat,
-					children: /* @__PURE__ */ jsxs(MarkerContent, { children: [/* @__PURE__ */ jsx("div", { className: "size-3 rounded-full border-2 border-white bg-blue-500 shadow-md" }), /* @__PURE__ */ jsx(MarkerLabel, {
+					children: /* @__PURE__ */ jsxs(MarkerContent, { children: [/* @__PURE__ */ jsx("div", {
+						className: "size-3.5 rounded-full border-2 border-white",
+						style: {
+							background: "#f5d27a",
+							boxShadow: "0 0 0 4px rgba(245,210,122,0.3), 0 0 10px 2px rgba(245,210,122,0.4)"
+						}
+					}), /* @__PURE__ */ jsx(MarkerLabel, {
 						position: "top",
-						className: "bg-background/80 rounded-sm px-1.5 py-0.5 text-[11px] font-semibold backdrop-blur",
+						className: "text-[#1a2f5a] text-[10px] font-bold tracking-wide",
 						children: HUB.name
 					})] })
 				}),
 				LOCATIONS.map((loc) => /* @__PURE__ */ jsx(MapMarker, {
 					longitude: loc.lng,
 					latitude: loc.lat,
-					children: /* @__PURE__ */ jsxs(MarkerContent, { children: [/* @__PURE__ */ jsx("div", { className: "size-2 rounded-full border-2 border-white bg-emerald-500 shadow" }), /* @__PURE__ */ jsx(MarkerLabel, {
+					children: /* @__PURE__ */ jsxs(MarkerContent, { children: [/* @__PURE__ */ jsx("div", {
+						className: "size-2 rounded-full border-2 border-white",
+						style: { background: "#3b82f6" }
+					}), /* @__PURE__ */ jsx(MarkerLabel, {
 						position: "top",
+						className: "text-[#1a2f5a] text-[9px] font-medium",
 						children: loc.city
 					})] })
 				}, loc.name)),
 				EXTRA_DOTS.map((d) => /* @__PURE__ */ jsx(MapMarker, {
 					longitude: d.lng,
 					latitude: d.lat,
-					children: /* @__PURE__ */ jsx(MarkerContent, { children: /* @__PURE__ */ jsx("div", { className: "size-1.5 rounded-full bg-muted-foreground/40" }) })
+					children: /* @__PURE__ */ jsx(MarkerContent, { children: /* @__PURE__ */ jsx("div", { className: "size-1.5 rounded-full bg-white/15" }) })
 				}, d.name))
 			]
 		})
 	});
 }
+function TickerRow({ loc }) {
+	const { t } = useTranslation();
+	return /* @__PURE__ */ jsxs(motion.div, {
+		className: "group flex items-center justify-between py-3 px-1 border-b border-white/[0.07] select-none",
+		whileHover: { x: 6 },
+		transition: {
+			type: "spring",
+			stiffness: 420,
+			damping: 32
+		},
+		children: [/* @__PURE__ */ jsxs("div", {
+			className: "flex items-center gap-2.5",
+			children: [/* @__PURE__ */ jsx(motion.svg, {
+				width: "12",
+				height: "12",
+				viewBox: "0 0 24 24",
+				fill: "none",
+				stroke: "#a8cce8",
+				strokeWidth: "2.5",
+				className: "shrink-0",
+				whileHover: {
+					x: 2,
+					y: -2
+				},
+				transition: {
+					type: "spring",
+					stiffness: 420,
+					damping: 32
+				},
+				children: /* @__PURE__ */ jsx("path", { d: "M7 17L17 7M17 7H7M17 7v10" })
+			}), /* @__PURE__ */ jsx("span", {
+				className: "text-[14px] font-semibold text-white/85 group-hover:text-white transition-colors duration-150",
+				style: { fontFamily: "Satoshi, sans-serif" },
+				children: loc.name
+			})]
+		}), /* @__PURE__ */ jsxs("div", {
+			className: "flex items-center gap-3",
+			children: [/* @__PURE__ */ jsx("span", {
+				className: `text-[11px] font-semibold tabular-nums ${TYPE_COLORS[loc.type] ?? "text-white/40"}`,
+				style: { fontFamily: "Satoshi, sans-serif" },
+				children: t(TYPE_KEYS[loc.type] ?? loc.type)
+			}), /* @__PURE__ */ jsx("span", {
+				className: "text-[11px] text-white/25",
+				style: { fontFamily: "Satoshi, sans-serif" },
+				children: t(REGION_KEYS$1[loc.region] ?? loc.region)
+			})]
+		})]
+	});
+}
 function LocationsGlobe() {
 	const { t } = useTranslation();
-	const sectionRef = useRef(null);
-	const isInView = useInView(sectionRef, {
-		once: false,
-		margin: "-100px"
-	});
-	return /* @__PURE__ */ jsx("section", {
-		ref: sectionRef,
-		className: "relative py-20 sm:py-28 px-4 sm:px-8 overflow-hidden",
-		children: /* @__PURE__ */ jsx("div", {
+	const [tickerPaused, setTickerPaused] = useState(false);
+	return /* @__PURE__ */ jsxs("section", {
+		className: "relative py-20 sm:py-28 px-4 sm:px-8 bg-[#0d1b38] overflow-hidden",
+		children: [/* @__PURE__ */ jsx("div", {
+			"aria-hidden": true,
+			className: "pointer-events-none hidden lg:block absolute -left-32 top-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full",
+			style: { background: "radial-gradient(circle, rgba(26,53,102,0.7) 0%, transparent 68%)" }
+		}), /* @__PURE__ */ jsx("div", {
 			className: "max-w-7xl mx-auto",
 			children: /* @__PURE__ */ jsxs("div", {
-				className: "flex flex-col lg:flex-row items-center gap-12 lg:gap-16",
+				className: "flex flex-col lg:flex-row items-center gap-12 lg:gap-20",
 				children: [/* @__PURE__ */ jsx(motion.div, {
-					className: "w-[95%] lg:w-[55%] shrink-0",
+					className: "w-full lg:w-[52%] shrink-0",
 					initial: {
 						opacity: 0,
-						x: -40,
-						scale: .92
+						scale: .86,
+						x: -32
 					},
-					animate: isInView ? {
+					whileInView: {
 						opacity: 1,
-						x: 0,
-						scale: 1
-					} : {
-						opacity: 0,
-						x: -40,
-						scale: .92
+						scale: 1,
+						x: 0
+					},
+					viewport: {
+						once: false,
+						margin: "-80px"
 					},
 					transition: {
-						duration: .8,
+						duration: .95,
 						ease: [
-							.25,
-							.46,
-							.45,
-							.94
+							.22,
+							1,
+							.36,
+							1
 						]
 					},
 					children: /* @__PURE__ */ jsx("div", {
 						className: "rounded-2xl overflow-hidden",
 						children: /* @__PURE__ */ jsx(GlobeMap, {})
 					})
-				}), /* @__PURE__ */ jsxs(motion.div, {
-					className: "w-[90%] lg:w-[45%] md:-ml-10 -ml-0 flex flex-col gap-8",
-					initial: {
-						opacity: 0,
-						x: 40
-					},
-					animate: isInView ? {
-						opacity: 1,
-						x: 0
-					} : {
-						opacity: 0,
-						x: 40
-					},
-					transition: {
-						duration: .8,
-						ease: [
-							.25,
-							.46,
-							.45,
-							.94
-						],
-						delay: .1
-					},
+				}), /* @__PURE__ */ jsxs("div", {
+					className: "w-full lg:w-[45%] flex flex-col gap-8",
 					children: [
 						/* @__PURE__ */ jsx(motion.p, {
-							className: "text-[10px] font-bold tracking-[0.3em] uppercase text-muted-foreground/60",
+							className: "text-[10px] font-bold tracking-[0.32em] uppercase text-white/35",
 							style: { fontFamily: "Satoshi, sans-serif" },
-							initial: { y: 28 },
-							animate: isInView ? { y: 0 } : { y: 28 },
-							transition: {
-								duration: .55,
-								ease: [
-									.25,
-									.46,
-									.45,
-									.94
-								],
-								delay: .22
-							},
+							...fadeUp$5(.08),
 							children: t("locations_globe.label")
 						}),
 						/* @__PURE__ */ jsxs("div", {
 							className: "-mt-4",
 							children: [/* @__PURE__ */ jsxs(motion.h2, {
-								className: "text-[2.8rem] sm:text-[3.5rem] font-black leading-[1.0] tracking-tight text-foreground",
+								className: "text-[2.6rem] sm:text-[3.4rem] font-black leading-[0.98] tracking-tight text-white",
 								style: { fontFamily: "Clash Display, sans-serif" },
-								initial: { y: 36 },
-								animate: isInView ? { y: 0 } : { y: 36 },
-								transition: {
-									duration: .6,
-									ease: [
-										.25,
-										.46,
-										.45,
-										.94
-									],
-									delay: .32
-								},
+								...fadeUp$5(.16),
 								children: [t("locations_globe.heading"), /* @__PURE__ */ jsx("span", {
-									className: "text-blue-600",
+									className: "text-[#a8cce8]",
 									children: "."
 								})]
 							}), /* @__PURE__ */ jsx(motion.p, {
-								className: "mt-4 text-base text-muted-foreground leading-relaxed max-w-sm",
+								className: "mt-4 text-[15px] text-white/45 leading-relaxed max-w-sm",
 								style: { fontFamily: "Satoshi, sans-serif" },
-								initial: { y: 28 },
-								animate: isInView ? { y: 0 } : { y: 28 },
-								transition: {
-									duration: .55,
-									ease: [
-										.25,
-										.46,
-										.45,
-										.94
-									],
-									delay: .42
-								},
+								...fadeUp$5(.24),
 								children: t("locations_globe.body")
 							})]
 						}),
-						/* @__PURE__ */ jsx("ul", {
-							className: "flex flex-col max-h-[260px] w-full md:w-[85%] overflow-y-auto gap-1",
-							children: LOCATIONS.map((loc, i) => /* @__PURE__ */ jsxs(motion.li, {
-								initial: {
-									opacity: 0,
-									y: 10
-								},
-								animate: isInView ? {
-									opacity: 1,
-									y: 0
-								} : {
-									opacity: 0,
-									y: 10
-								},
-								transition: {
-									duration: .4,
-									delay: isInView ? .3 + i * .06 : 0
-								},
-								children: [/* @__PURE__ */ jsxs("div", {
-									className: "group flex items-center justify-between py-2.5 cursor-default",
-									children: [/* @__PURE__ */ jsxs("div", {
-										className: "flex items-center gap-2.5",
-										children: [/* @__PURE__ */ jsx(ArrowUpRight, { className: "h-3.5 w-3.5 text-blue-600 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" }), /* @__PURE__ */ jsx("span", {
-											className: "text-[15px] font-semibold text-foreground transition-transform duration-300 group-hover:translate-x-1",
-											style: {
-												fontFamily: "Satoshi, sans-serif",
-												display: "inline-block"
-											},
-											children: loc.name
-										})]
-									}), /* @__PURE__ */ jsxs("div", {
-										className: "flex items-center gap-2",
-										children: [/* @__PURE__ */ jsx("span", {
-											className: `text-[11px] font-semibold tabular-nums ${TYPE_COLORS[loc.type] ?? "text-muted-foreground/60"}`,
-											style: { fontFamily: "Satoshi, sans-serif" },
-											children: t(TYPE_KEYS[loc.type] ?? loc.type)
-										}), /* @__PURE__ */ jsx("span", {
-											className: "text-[11px] text-muted-foreground/40",
-											style: { fontFamily: "Satoshi, sans-serif" },
-											children: t(REGION_KEYS$1[loc.region] ?? loc.region)
-										})]
-									})]
-								}), i < LOCATIONS.length - 1 && /* @__PURE__ */ jsx("div", { className: "h-px bg-border/40" })]
-							}, loc.name))
+						/* @__PURE__ */ jsx(motion.div, {
+							className: "relative h-[232px] overflow-hidden rounded-xl",
+							style: { maskImage: "linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%)" },
+							...fadeUp$5(.32),
+							children: /* @__PURE__ */ jsx("div", {
+								className: "ticker-track",
+								style: { animationPlayState: tickerPaused ? "paused" : "running" },
+								onMouseEnter: () => setTickerPaused(true),
+								onMouseLeave: () => setTickerPaused(false),
+								children: TICKER_ITEMS.map((loc, i) => /* @__PURE__ */ jsx(TickerRow, { loc }, `${loc.name}-${i}`))
+							})
 						}),
-						/* @__PURE__ */ jsx("div", {
-							className: "flex items-start",
+						/* @__PURE__ */ jsx(motion.div, {
+							className: "flex items-start justify-center lg:justify-start pt-2",
+							...fadeUp$5(.42),
 							children: STATS.map((stat, i) => /* @__PURE__ */ jsxs("div", {
 								className: "flex items-stretch",
 								children: [/* @__PURE__ */ jsxs("div", {
-									className: "flex flex-col gap-1 px-6 first:pl-0",
+									className: "flex flex-col items-center lg:items-start gap-1.5 px-7 first:pl-0 lg:first:pl-0",
 									children: [/* @__PURE__ */ jsx("span", {
-										className: "text-3xl sm:text-4xl font-black text-foreground leading-none",
+										className: "text-[2.2rem] font-black text-white leading-none tabular-nums",
 										style: { fontFamily: "Clash Display, sans-serif" },
 										children: /* @__PURE__ */ jsx(CountUp, {
 											to: stat.value,
 											suffix: stat.suffix
 										})
 									}), /* @__PURE__ */ jsx("span", {
-										className: "text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60",
+										className: "text-[10px] font-bold uppercase tracking-[0.22em] text-white/35",
 										style: { fontFamily: "Satoshi, sans-serif" },
 										children: t(stat.labelKey)
 									})]
-								}), i < STATS.length - 1 && /* @__PURE__ */ jsx("div", { className: "w-px self-stretch bg-border mx-0" })]
+								}), i < STATS.length - 1 && /* @__PURE__ */ jsx("div", { className: "w-px self-stretch bg-white/10" })]
 							}, stat.labelKey))
 						})
 					]
 				})]
 			})
-		})
+		})]
 	});
 }
 //#endregion
@@ -3300,8 +3131,8 @@ var SPRING = {
 var SERVICES = [
 	{
 		id: "flight",
-		label: "Flights",
-		note: "Nigeria to the world",
+		labelKey: "hero.flight_label",
+		noteKey: "hero.flight_note",
 		icon: /* @__PURE__ */ jsx("svg", {
 			width: "18",
 			height: "18",
@@ -3314,8 +3145,8 @@ var SERVICES = [
 	},
 	{
 		id: "road",
-		label: "Road Travel",
-		note: "West Africa routes",
+		labelKey: "hero.road_label",
+		noteKey: "hero.road_note",
 		icon: /* @__PURE__ */ jsxs("svg", {
 			width: "18",
 			height: "18",
@@ -3340,8 +3171,8 @@ var SERVICES = [
 	},
 	{
 		id: "expedition",
-		label: "Expeditions",
-		note: "Latin America & beyond",
+		labelKey: "hero.expedition_label",
+		noteKey: "hero.expedition_note",
 		icon: /* @__PURE__ */ jsxs("svg", {
 			width: "18",
 			height: "18",
@@ -3358,11 +3189,12 @@ var SERVICES = [
 	}
 ];
 function JourneyStartCTA() {
+	const { t } = useTranslation();
 	const [active, setActive] = useState("flight");
 	return /* @__PURE__ */ jsx("div", {
 		className: "relative z-20 -mt-[210px] sm:-mt-[200px] pb-24 px-4 sm:px-8",
 		children: /* @__PURE__ */ jsxs("div", {
-			className: "mx-auto max-w-[900px]",
+			className: "mx-auto max-w-[1180px]",
 			children: [/* @__PURE__ */ jsxs(motion.div, {
 				className: "bg-white rounded-[24px] shadow-[0_30px_80px_-20px_rgba(13,27,56,.45)] p-5 sm:p-7 border border-black/[0.04]",
 				initial: {
@@ -3389,15 +3221,15 @@ function JourneyStartCTA() {
 						children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("p", {
 							className: "text-[10.5px] tracking-[0.28em] uppercase text-[#6b7a8d] mb-0.5",
 							style: { fontFamily: "Satoshi, sans-serif" },
-							children: "Next Route Travels"
+							children: t("hero.cta_label")
 						}), /* @__PURE__ */ jsx("p", {
 							className: "text-[17px] font-bold text-[#0d1b38]",
 							style: { fontFamily: "Clash Display, sans-serif" },
-							children: "How would you like to travel?"
+							children: t("hero.cta_how")
 						})] }), /* @__PURE__ */ jsx("span", {
 							className: "text-[11px] tracking-[0.2em] uppercase text-[#6b7a8d] crosshair hidden sm:inline",
 							style: { fontFamily: "Satoshi, sans-serif" },
-							children: "Manual confirmation · within 24h"
+							children: t("hero.cta_confirmation")
 						})]
 					}),
 					/* @__PURE__ */ jsx("div", {
@@ -3423,12 +3255,12 @@ function JourneyStartCTA() {
 								/* @__PURE__ */ jsx("span", {
 									className: `relative z-10 text-[13px] font-semibold ${active === s.id ? "text-white" : "text-[#1a2f5a]"}`,
 									style: { fontFamily: "Satoshi, sans-serif" },
-									children: s.label
+									children: t(s.labelKey)
 								}),
 								/* @__PURE__ */ jsx("span", {
 									className: `relative z-10 text-[11px] hidden sm:block ${active === s.id ? "text-white/55" : "text-[#6b7a8d]"}`,
 									style: { fontFamily: "Satoshi, sans-serif" },
-									children: s.note
+									children: t(s.noteKey)
 								})
 							]
 						}, s.id))
@@ -3438,20 +3270,30 @@ function JourneyStartCTA() {
 						children: [/* @__PURE__ */ jsxs("div", {
 							className: "flex items-center gap-2 text-[12px] text-[#6b7a8d]",
 							style: { fontFamily: "Satoshi, sans-serif" },
-							children: [/* @__PURE__ */ jsx("span", { className: "w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" }), "No automated booking. A travel specialist confirms your options within 24 hours."]
+							children: [/* @__PURE__ */ jsx("span", { className: "w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" }), t("hero.cta_no_booking")]
 						}), /* @__PURE__ */ jsx(Link, {
 							to: "/enquiries",
 							children: /* @__PURE__ */ jsxs(motion.span, {
 								className: "inline-flex items-center gap-3 pl-5 pr-1 py-1 rounded-full bg-[#0d1b38] text-white shadow-[0_12px_30px_-6px_rgba(13,27,56,.45)] cursor-pointer",
-								whileHover: { y: -1 },
+								variants: {
+									rest: { y: 0 },
+									hover: { y: -1 }
+								},
+								initial: "rest",
+								whileHover: "hover",
 								whileTap: { scale: .97 },
 								transition: SPRING,
 								children: [/* @__PURE__ */ jsx("span", {
 									className: "text-[13.5px] font-medium",
 									style: { fontFamily: "Satoshi, sans-serif" },
-									children: "Send Enquiry"
-								}), /* @__PURE__ */ jsx("span", {
+									children: t("hero.cta_send")
+								}), /* @__PURE__ */ jsx(motion.span, {
 									className: "w-9 h-9 rounded-full bg-white text-[#0d1b38] flex items-center justify-center",
+									variants: {
+										rest: { x: 0 },
+										hover: { x: 3 }
+									},
+									transition: SPRING,
 									children: /* @__PURE__ */ jsx("svg", {
 										width: "16",
 										height: "16",
@@ -3482,7 +3324,7 @@ function JourneyStartCTA() {
 								stroke: "currentColor",
 								strokeWidth: "1.8",
 								children: /* @__PURE__ */ jsx("path", { d: "M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6l8-4z" })
-							}), "IATA Accredited"]
+							}), t("hero.cta_iata")]
 						}),
 						/* @__PURE__ */ jsxs("span", {
 							className: "inline-flex items-center gap-1.5",
@@ -3498,7 +3340,7 @@ function JourneyStartCTA() {
 									cy: "12",
 									r: "9"
 								}), /* @__PURE__ */ jsx("path", { d: "M12 7v5l3 2" })]
-							}), "24/7 specialist support"]
+							}), t("hero.cta_support")]
 						}),
 						/* @__PURE__ */ jsxs("span", {
 							className: "inline-flex items-center gap-1.5",
@@ -3510,19 +3352,20 @@ function JourneyStartCTA() {
 								stroke: "currentColor",
 								strokeWidth: "1.8",
 								children: /* @__PURE__ */ jsx("path", { d: "M12 2v20M5 9l7-7 7 7M5 15l7 7 7-7" })
-							}), "Best price promise"]
+							}), t("hero.cta_price")]
 						})
 					]
 				}), /* @__PURE__ */ jsx("a", {
 					className: "underline underline-offset-4 hover:text-[#1a2f5a] cursor-pointer",
 					href: "/enquiries",
-					children: "Or reach us on WhatsApp →"
+					children: t("hero.cta_whatsapp")
 				})]
 			})]
 		})
 	});
 }
 function Hero() {
+	const { t } = useTranslation();
 	const [index, setIndex] = useState(0);
 	const [paused, setPaused] = useState(false);
 	const fillRefs = useRef([]);
@@ -3596,7 +3439,7 @@ function Hero() {
 							className: "reveal-line reveal-1 flex items-center gap-3 text-[11.5px] tracking-[0.32em] uppercase text-white/70",
 							children: [
 								/* @__PURE__ */ jsx("span", { className: "w-1.5 h-1.5 rounded-full bg-[#a8cce8] pulse-dot" }),
-								/* @__PURE__ */ jsx("span", { children: "Lagos · London · New York · Dubai" }),
+								/* @__PURE__ */ jsx("span", { children: t("hero.eyebrow") }),
 								/* @__PURE__ */ jsx("span", {
 									className: "hidden sm:inline crosshair text-white/40 normal-case tracking-[0.05em] ml-2",
 									children: active.coords
@@ -3660,7 +3503,7 @@ function Hero() {
 							children: [/* @__PURE__ */ jsxs("a", {
 								href: "destinations",
 								className: "group inline-flex items-center gap-3 text-[14px] text-white font-medium whitespace-nowrap",
-								children: ["Explore destinations", /* @__PURE__ */ jsx("span", {
+								children: [t("hero.explore"), /* @__PURE__ */ jsx("span", {
 									className: "w-9 h-9 rounded-full border border-white/35 flex items-center justify-center group-hover:bg-white group-hover:text-[#0d1b38] transition",
 									children: /* @__PURE__ */ jsx("svg", {
 										width: "14",
@@ -3691,7 +3534,7 @@ function Hero() {
 										d: "M10 8.5l6 3.5-6 3.5z",
 										fill: "currentColor"
 									})]
-								}), paused ? "Resume tour" : "Pause tour"]
+								}), paused ? t("hero.resume") : t("hero.pause")]
 							})]
 						})
 					}),
@@ -3764,13 +3607,6 @@ function Hero() {
 								children: active.code
 							})
 						]
-					}),
-					/* @__PURE__ */ jsx("div", {
-						className: "absolute left-1/2 -translate-x-1/2 bottom-[260px] sm:bottom-[240px] hidden md:flex flex-col items-center text-white/60",
-						children: /* @__PURE__ */ jsx("div", {
-							className: "w-7 h-10 rounded-full border border-white/30 flex items-start justify-center pt-1.5",
-							children: /* @__PURE__ */ jsx("span", { className: "w-1 h-2 rounded-full bg-white/70 block nudge" })
-						})
 					})
 				]
 			}),
@@ -6105,7 +5941,26 @@ var common_default = {
 		"heading_line2": "You Enjoy the Journey.",
 		"sub": "From Lagos to London, Serengeti to New York — seamless air travel, West African road trips, and curated international expeditions.",
 		"cta_primary": "Explore Destinations",
-		"cta_secondary": "Our Story"
+		"cta_secondary": "Our Story",
+		"eyebrow": "Lagos · London · New York · Dubai",
+		"explore": "Explore destinations",
+		"pause": "Pause tour",
+		"resume": "Resume tour",
+		"cta_label": "Next Route Travels",
+		"cta_how": "How would you like to travel?",
+		"cta_confirmation": "Manual confirmation · within 24h",
+		"cta_no_booking": "No automated booking. A travel specialist confirms your options within 24 hours.",
+		"cta_send": "Send Enquiry",
+		"cta_whatsapp": "Or reach us on WhatsApp →",
+		"cta_iata": "IATA Accredited",
+		"cta_support": "24/7 specialist support",
+		"cta_price": "Best price promise",
+		"flight_label": "Flights",
+		"flight_note": "Nigeria to the world",
+		"road_label": "Road Travel",
+		"road_note": "West Africa routes",
+		"expedition_label": "Expeditions",
+		"expedition_note": "Latin America & beyond"
 	},
 	home_services: {
 		"eyebrow": "What We Do",
