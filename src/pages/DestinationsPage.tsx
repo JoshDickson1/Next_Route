@@ -302,7 +302,7 @@ export default function DestinationsPage() {
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, margin: '-60px' }}
+            viewport={{ once: false, margin: '200px 0px -60px 0px' }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
             <FeaturedCarousel />
@@ -359,7 +359,7 @@ export default function DestinationsPage() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.93, y: 20 }}
                   whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                  viewport={{ once: false, margin: '-40px' }}
+                  viewport={{ once: false, margin: '200px 0px -40px 0px' }}
                   transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: (i % 3) * 0.07 }}
                 >
                   <DestinationCard
@@ -402,7 +402,7 @@ export default function DestinationsPage() {
           <motion.div
             className="text-center mb-14"
             initial={{ opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, margin: '-60px' }}
+            viewport={{ once: false, margin: '200px 0px -60px 0px' }}
             transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
           >
             <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white" style={{ fontFamily: 'Clash Display, sans-serif' }}>
@@ -414,7 +414,7 @@ export default function DestinationsPage() {
               <motion.div
                 key={title}
                 initial={{ opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: false, margin: '-40px' }}
+                viewport={{ once: false, margin: '200px 0px -40px 0px' }}
                 transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1], delay: i * 0.1 }}
                 className="relative p-7 rounded-2xl overflow-hidden transition-all duration-500"
                 style={{ background: 'rgba(255,255,255,0.03)', border: `1px solid ${accent}28` }}

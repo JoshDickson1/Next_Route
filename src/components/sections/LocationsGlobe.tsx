@@ -88,7 +88,7 @@ function fadeUp(delay = 0) {
   return {
     initial:     { opacity: 0, y: 36 },
     whileInView: { opacity: 1, y: 0  },
-    viewport:    { once: false, margin: '-80px' } as const,
+    viewport:    { once: false, margin: '200px 0px -80px 0px' } as const,
     transition:  { duration: 0.65, ease: [0.22, 1, 0.36, 1] as const, delay },
   };
 }
@@ -97,7 +97,7 @@ function fadeUp(delay = 0) {
 
 function CountUp({ to, suffix }: { to: number; suffix: string }) {
   const ref     = useRef<HTMLSpanElement>(null);
-  const inView  = useInView(ref, { once: false, margin: '-80px' });
+  const inView  = useInView(ref, { once: false, margin: '200px 0px -80px 0px' });
   const mv      = useMotionValue(0);
   const spring  = useSpring(mv, { stiffness: 60, damping: 20 });
   const [val, setVal] = useState(0);
@@ -205,7 +205,7 @@ export function LocationsGlobe() {
             className="w-full lg:w-[52%] shrink-0"
             initial={{ opacity: 0, scale: 0.86, x: -32 }}
             whileInView={{ opacity: 1, scale: 1, x: 0 }}
-            viewport={{ once: false, margin: '-80px' }}
+            viewport={{ once: false, margin: '200px 0px -80px 0px' }}
             transition={{ duration: 0.95, ease: [0.22, 1, 0.36, 1] }}
           >
             <GlobeMap />

@@ -31,7 +31,7 @@ function AccordionItem({
     <motion.div
       initial={{ opacity: 0, y: 14 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: false, margin: "-20px" }}
+      viewport={{ once: false, margin: "200px 0px -20px 0px" }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: index * 0.045 }}
       className="rounded-2xl overflow-hidden"
       style={{
@@ -140,7 +140,7 @@ export function FaqSection({
           className="w-full lg:w-[380px] shrink-0"
           initial={{ opacity: 0, x: -24 }}
           whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: false, margin: "-60px" }}
+          viewport={{ once: false, margin: "200px 0px -60px 0px" }}
           transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
         >
           <div
@@ -192,7 +192,7 @@ export function FaqSection({
           className="flex-1 min-w-0"
           initial={{ opacity: 0, x: 24 }}
           whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: false, margin: "-60px" }}
+          viewport={{ once: false, margin: "200px 0px -60px 0px" }}
           transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1], delay: 0.08 }}
         >
           <Eyebrow label={eyebrow} />

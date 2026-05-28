@@ -362,7 +362,7 @@ const DESTINATIONS: Record<string, DestinationData> = {
 const fadeUp = {
   initial:     { opacity: 0, y: 36 },
   whileInView: { opacity: 1, y: 0  },
-  viewport:    { once: false, margin: '-60px' },
+  viewport:    { once: false, margin: '200px 0px -60px 0px' },
   transition:  { duration: 0.65, ease: [0.22, 1, 0.36, 1] as const },
 };
 

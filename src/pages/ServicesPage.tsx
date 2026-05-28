@@ -70,7 +70,7 @@ const HERO_SERVICES = [
 const fadeUp = {
   initial:     { opacity: 0, y: 40 },
   whileInView: { opacity: 1, y: 0  },
-  viewport:    { once: false, margin: '-60px' },
+  viewport:    { once: false, margin: '200px 0px -60px 0px' },
   transition:  { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const },
 };
 
@@ -312,7 +312,7 @@ export default function ServicesPage() {
                   key={title}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: false, margin: '-30px' }}
+                  viewport={{ once: false, margin: '200px 0px -30px 0px' }}
                   transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: i * 0.07 }}
                   className="flex items-start gap-3 p-4 rounded-2xl"
                   style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
@@ -413,7 +413,7 @@ export default function ServicesPage() {
                 key={exp.title}
                 initial={{ opacity: 0, y: 32 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: false, margin: '-40px' }}
+                viewport={{ once: false, margin: '200px 0px -40px 0px' }}
                 transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: i * 0.08 }}
                 className="group relative rounded-3xl overflow-hidden"
                 style={{ border: '1px solid rgba(13,27,56,0.07)', boxShadow: '0 4px 24px -6px rgba(13,27,56,0.08)' }}

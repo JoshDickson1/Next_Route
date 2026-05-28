@@ -289,7 +289,7 @@ function TestimonialCard({ testimonial, index }: { testimonial: Testimonial; ind
       <motion.div
         initial={{ opacity: 0, y: 32 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: false, margin: '-40px' }}
+        viewport={{ once: false, margin: '200px 0px -40px 0px' }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: index * 0.06 }}
         className="relative rounded-2xl overflow-hidden"
         style={{
@@ -405,7 +405,7 @@ function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => void })
 const fadeUp = {
   initial:     { opacity: 0, y: 36 },
   whileInView: { opacity: 1, y: 0  },
-  viewport:    { once: false, margin: '-60px' },
+  viewport:    { once: false, margin: '200px 0px -60px 0px' },
   transition:  { duration: 0.65, ease: [0.22, 1, 0.36, 1] as const },
 };
 
