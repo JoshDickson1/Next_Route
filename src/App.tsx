@@ -16,6 +16,10 @@ const ServicesPage     = lazy(() => import('@/pages/ServicesPage'))
 const DestinationsPage = lazy(() => import('@/pages/DestinationsPage'))
 const OurStoryPage     = lazy(() => import('@/pages/OurStoryPage'))
 const EnquiriesPage    = lazy(() => import('@/pages/EnquiriesPage'))
+const ReviewsPage           = lazy(() => import('@/pages/ReviewsPage'))
+const DestinationDetailPage = lazy(() => import('@/pages/DestinationDetailPage'))
+const TeamPage              = lazy(() => import('@/pages/TeamPage'))
+const NotFoundPage          = lazy(() => import('@/pages/NotFoundPage'))
 
 function BackToTop() {
   const [visible, setVisible] = useState(false)
@@ -69,6 +73,10 @@ function AppInner() {
               <Route path="/destinations" element={<DestinationsPage />} />
               <Route path="/our-story"    element={<OurStoryPage />} />
               <Route path="/enquiries"    element={<EnquiriesPage />} />
+              <Route path="/reviews"              element={<ReviewsPage />} />
+              <Route path="/destinations/:slug" element={<DestinationDetailPage />} />
+              <Route path="/team"               element={<TeamPage />} />
+              <Route path="*"            element={<NotFoundPage />} />
             </Routes>
           </Suspense>
         </main>

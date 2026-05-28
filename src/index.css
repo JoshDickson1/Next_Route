@@ -117,6 +117,11 @@ body {
   }
 }
 
+@keyframes moveBackground {
+  from { background-position: 0% 0%;     }
+  to   { background-position: 0% -1000%; }
+}
+
 @keyframes scroll-left  { from { transform: translateX(0);     } to { transform: translateX(-25%); } }
 @keyframes scroll-right { from { transform: translateX(-25%);  } to { transform: translateX(0);    } }
 

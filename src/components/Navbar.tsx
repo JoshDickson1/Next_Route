@@ -13,7 +13,7 @@ const NAV_LINK_KEYS = [
   { to: '/services',     key: 'services'               },
   { to: '/destinations', key: 'destinations'            },
   { to: '/our-story',    key: 'our_story'               },
-  // { to: '/enquiries',    key: 'enquiries'               },
+  { to: '/reviews',      key: 'reviews'                 },
 ];
 
 function GridIcon({ size = 16 }: { size?: number }) {
@@ -87,7 +87,7 @@ export function Navbar() {
             {NAV_LINK_KEYS.map(({ to, key, end }) => (
               <NavLink key={to} to={to} end={end}>
                 {({ isActive }) => (
-                  <div className="relative text-green-600 px-3 py-1.5">
+                  <div className="relative px-3 py-1.5">
                     {isActive && (
                       <motion.div
                         layoutId="nav-active-pill"

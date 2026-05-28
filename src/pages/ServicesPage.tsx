@@ -1,227 +1,472 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, CheckCircle, Globe, Map, Compass } from 'lucide-react';
+import {
+  ArrowRight, Plane, MapPin, Compass, Clock, Shield,
+  Users, Star, CheckCircle, ChevronRight,
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { CTABanner } from '@/components/CTABanner';
 import { SEOHead } from '@/components/SEOHead';
 
-const fadeUp = {
-  initial:    { opacity: 0, y: 40 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport:   { once: false, margin: '-60px' },
-  transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] as const },
-};
+// ── Images ────────────────────────────────────────────────────────────────────
+const IMG_HERO    = 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1800&auto=format&fit=crop&q=90';
+const IMG_FLIGHTS = 'https://images.unsplash.com/photo-1569629743817-70d8db6c323b?w=1200&auto=format&fit=crop&q=85';
+const IMG_ROAD    = 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1200&auto=format&fit=crop&q=85';
+const IMG_LATAM   = 'https://images.unsplash.com/photo-1482938289607-e9573fc25ebb?w=1200&auto=format&fit=crop&q=85';
 
+// ── Data ──────────────────────────────────────────────────────────────────────
 const FLIGHT_ROUTES = ['Lagos → London', 'Lagos → Dubai', 'Abuja → New York', 'Lagos → Toronto', 'Abuja → Atlanta'];
 const ROAD_ROUTES   = ['Lagos → Abuja', 'Lagos → Accra', 'Abuja → Kano', 'Lagos → Cotonou', 'Port Harcourt → Enugu'];
 
-const ROAD_FEATURE_KEYS = ['road_feature1', 'road_feature2', 'road_feature3', 'road_feature4'];
-
-const EXPEDITIONS = [
-  { title: 'Colombia → Ecuador Overland',  duration: '14 days', desc: 'Cross the Andes from Medellín to Quito, passing cloud forests, volcano corridors, and colonial towns.', includes: 'SUV, guide, accommodation, meals' },
-  { title: 'Patagonia SUV Circuit, Argentina', duration: '10 days', desc: 'Drive the legendary Ruta 40, camp under the stars, and trek Torres del Paine.', includes: 'SUV, guide, camping gear, permits' },
-  { title: 'Peru Sacred Valley & Amazon Loop', duration: '12 days', desc: 'Machu Picchu by road, then descend into the Amazon for a once-in-a-lifetime contrast.', includes: '4x4, bilingual guide, flights to Cusco' },
-  { title: 'Mexico City → Panama Overland',  duration: '21 days', desc: 'The ultimate Central American road epic — six countries, ancient ruins, and Pacific coastlines.', includes: 'Convoy SUV, support team, hotels, ferry' },
+const ROAD_FEATURES = [
+  { Icon: Shield,  title: 'Vetted vehicles',       body: 'Every vehicle inspected before departure.' },
+  { Icon: Users,   title: 'Experienced drivers',   body: 'Licensed, route-familiar professionals.' },
+  { Icon: Clock,   title: 'Real-time tracking',    body: 'Live location shared with your contacts.' },
+  { Icon: Star,    title: '4.9-star rated',         body: 'Consistently top-rated by our travellers.' },
 ];
 
-function RouteTags({ routes }: { routes: string[] }) {
+const EXPEDITIONS = [
+  {
+    title:    'Colombia → Ecuador Overland',
+    duration: '14 days',
+    desc:     'Cross the Andes from Medellín to Quito, passing cloud forests, volcano corridors, and colonial towns.',
+    includes: 'SUV · Guide · Accommodation · Meals',
+    image:    'https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=700&auto=format&fit=crop&q=80',
+    accent:   '#34d399',
+  },
+  {
+    title:    'Patagonia SUV Circuit',
+    duration: '10 days',
+    desc:     'Drive the legendary Ruta 40, camp under the stars, and trek Torres del Paine.',
+    includes: 'SUV · Guide · Camping gear · Permits',
+    image:    'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=700&auto=format&fit=crop&q=80',
+    accent:   '#60a5fa',
+  },
+  {
+    title:    'Peru Sacred Valley & Amazon',
+    duration: '12 days',
+    desc:     'Machu Picchu by road, then descend into the Amazon for a once-in-a-lifetime contrast.',
+    includes: '4x4 · Bilingual guide · Cusco flights',
+    image:    'https://images.unsplash.com/photo-1526392060635-9d6019884377?w=700&auto=format&fit=crop&q=80',
+    accent:   '#fbbf24',
+  },
+  {
+    title:    'Mexico City → Panama',
+    duration: '21 days',
+    desc:     'Six countries, ancient ruins, and Pacific coastlines. The ultimate Central American road epic.',
+    includes: 'Convoy SUV · Support team · Hotels · Ferry',
+    image:    'https://images.unsplash.com/photo-1518057111178-44a106bad636?w=700&auto=format&fit=crop&q=80',
+    accent:   '#f87171',
+  },
+];
+
+const HERO_SERVICES = [
+  { Icon: Plane,   label: 'International Flights',     sub: '120+ routes from Lagos & Abuja' },
+  { Icon: MapPin,  label: 'West Africa Road Travel',   sub: 'Vetted fleets, real-time tracking' },
+  { Icon: Compass, label: 'Latin America Expeditions', sub: 'Overland adventures, 4x4 ready' },
+];
+
+// ── Animations ────────────────────────────────────────────────────────────────
+const fadeUp = {
+  initial:     { opacity: 0, y: 40 },
+  whileInView: { opacity: 1, y: 0  },
+  viewport:    { once: false, margin: '-60px' },
+  transition:  { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const },
+};
+
+// ── Sub-components ────────────────────────────────────────────────────────────
+
+function RoutePill({ label }: { label: string }) {
   return (
-    <div className="flex flex-wrap gap-2 mt-6">
-      {routes.map((r) => (
-        <span key={r} className="px-3 py-1 rounded-full text-xs font-semibold border"
-          style={{ fontFamily: 'Satoshi, sans-serif', borderColor: 'rgba(74,144,217,0.3)', color: '#4a90d9', background: 'rgba(74,144,217,0.08)' }}>
-          {r}
-        </span>
-      ))}
+    <span
+      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold"
+      style={{ fontFamily: 'Satoshi, sans-serif', background: 'rgba(74,144,217,0.1)', color: '#4a90d9', border: '1px solid rgba(74,144,217,0.22)' }}
+    >
+      <span className="w-1 h-1 rounded-full bg-current opacity-60" />
+      {label}
+    </span>
+  );
+}
+
+function SectionEyebrow({ label, dark = false }: { label: string; dark?: boolean }) {
+  return (
+    <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-5"
+      style={{
+        background: dark ? 'rgba(255,255,255,0.08)' : 'rgba(74,144,217,0.1)',
+        border:     dark ? '1px solid rgba(255,255,255,0.15)' : '1px solid rgba(74,144,217,0.25)',
+      }}>
+      <span className="w-1.5 h-1.5 rounded-full" style={{ background: dark ? '#60a5fa' : '#4a90d9' }} />
+      <span className="text-[11px] font-black uppercase tracking-[0.2em]"
+        style={{ fontFamily: 'Satoshi, sans-serif', color: dark ? 'rgba(255,255,255,0.6)' : '#4a90d9' }}>
+        {label}
+      </span>
     </div>
   );
 }
 
+function EnquireButton({ dark = false, label }: { dark?: boolean; label: string }) {
+  return (
+    <Link to="/enquiries">
+      <motion.span
+        className="inline-flex items-center gap-3 pl-6 pr-2 py-2 rounded-full cursor-pointer"
+        style={{
+          background:  dark ? '#fff'      : '#0d1b38',
+          color:       dark ? '#0d1b38'   : '#fff',
+          fontFamily: 'Satoshi, sans-serif',
+        }}
+        whileHover={{ scale: 1.03 }}
+        whileTap={{ scale: 0.97 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+      >
+        <span className="text-sm font-bold">{label}</span>
+        <span
+          className="w-9 h-9 rounded-full flex items-center justify-center"
+          style={{ background: dark ? '#0d1b38' : 'rgba(255,255,255,0.15)' }}
+        >
+          <ArrowRight className="w-4 h-4" style={{ color: dark ? '#fff' : '#fff' }} />
+        </span>
+      </motion.span>
+    </Link>
+  );
+}
+
+// ── Page ──────────────────────────────────────────────────────────────────────
 export default function ServicesPage() {
   const { t } = useTranslation();
 
   return (
-    <div>
+    <div className="bg-[#f5f8fc]">
       <SEOHead
         title="Travel Services — Next Route Travels"
         description="From international flights to cross-continent road expeditions — we cover every route, every mode, every adventure."
         canonicalPath="/services"
       />
-      {/* ── HERO ── */}
-      <section className="relative min-h-[70vh] flex items-center bg-[#0d1b38] overflow-hidden">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full bg-blue-600/10 blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-blue-400/08 blur-[100px] pointer-events-none" />
-        <div className="relative z-10 max-w-7xl mx-auto px-6 pt-36 pb-20 w-full">
-          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}>
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 mb-6">
+
+      {/* ══════════════════════════════════════════════════════════════════════
+          HERO — full-bleed airplane wing photo
+      ══════════════════════════════════════════════════════════════════════ */}
+      <section className="relative min-h-[92vh] flex flex-col justify-end overflow-hidden">
+
+        {/* Background photo */}
+        <div className="absolute inset-0">
+          <img src={IMG_HERO} alt="Airplane wing above clouds" className="w-full h-full object-cover" style={{ objectPosition: 'center 60%' }} />
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(13,27,56,0.55) 0%, rgba(13,27,56,0.3) 35%, rgba(13,27,56,0.72) 70%, #0d1b38 100%)' }} />
+        </div>
+
+        {/* Hero content */}
+        <div className="relative z-10 max-w-7xl mx-auto w-full px-6 pt-40 pb-0">
+          <motion.div
+            initial={{ opacity: 0, y: 32 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+            className="max-w-3xl"
+          >
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/8 px-4 py-1.5 mb-6 backdrop-blur-sm">
               <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
               <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-white/60" style={{ fontFamily: 'Satoshi, sans-serif' }}>
                 {t('services_page.eyebrow')}
               </span>
             </div>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-white mb-6" style={{ fontFamily: 'Clash Display, sans-serif' }}>
+            <h1
+              className="text-6xl md:text-7xl lg:text-[5.5rem] font-black tracking-tight text-white leading-[0.93] mb-6"
+              style={{ fontFamily: 'Clash Display, sans-serif' }}
+            >
               {t('services_page.heading')}
             </h1>
-            <p className="text-xl text-white/45 max-w-2xl leading-relaxed" style={{ fontFamily: 'Satoshi, sans-serif' }}>
+            <p className="text-lg text-white/50 max-w-xl leading-relaxed" style={{ fontFamily: 'Satoshi, sans-serif' }}>
               {t('services_page.sub')}
             </p>
+          </motion.div>
+
+          {/* Three service tabs — sit on the fold */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1], delay: 0.22 }}
+            className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-px overflow-hidden rounded-t-2xl"
+            style={{ background: 'rgba(255,255,255,0.06)' }}
+          >
+            {HERO_SERVICES.map(({ Icon, label, sub }, i) => (
+              <div
+                key={label}
+                className="flex items-center gap-4 px-6 py-5 backdrop-blur-md transition-colors duration-300 hover:bg-white/10 cursor-default"
+                style={{ background: 'rgba(13,27,56,0.55)', borderTop: '1px solid rgba(255,255,255,0.1)' }}
+              >
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                  style={{ background: 'rgba(74,144,217,0.2)', border: '1px solid rgba(74,144,217,0.3)' }}>
+                  <Icon className="w-4.5 h-4.5" style={{ color: '#60a5fa' }} />
+                </div>
+                <div>
+                  <p className="text-sm font-black text-white leading-tight" style={{ fontFamily: 'Clash Display, sans-serif' }}>{label}</p>
+                  <p className="text-[11px] text-white/40 mt-0.5" style={{ fontFamily: 'Satoshi, sans-serif' }}>{sub}</p>
+                </div>
+                {i < HERO_SERVICES.length - 1 && (
+                  <ChevronRight className="ml-auto w-4 h-4 text-white/20 hidden md:block" />
+                )}
+              </div>
+            ))}
           </motion.div>
         </div>
       </section>
 
-      {/* ── SECTION 2: FLIGHTS ── */}
-      <section className="py-28 px-6 bg-[#f5f8fc]">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-          <motion.div {...fadeUp}>
-            <div className="rounded-2xl overflow-hidden aspect-[4/3] flex items-center justify-center relative"
-              style={{ background: 'linear-gradient(135deg, #0d1b38 0%, #1a2f5a 50%, #243a6e 100%)' }}>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Globe className="w-32 h-32 text-blue-400/20" strokeWidth={0.8} />
-              </div>
-              <div className="relative z-10 text-center px-8">
-                <p className="text-white/30 text-sm tracking-widest uppercase mb-3" style={{ fontFamily: 'Satoshi, sans-serif' }}>International</p>
-                <p className="text-white text-4xl font-black" style={{ fontFamily: 'Clash Display, sans-serif' }}>Flights</p>
-                <div className="mt-6 flex flex-col gap-2">
-                  {FLIGHT_ROUTES.slice(0, 3).map((r) => (
-                    <div key={r} className="flex items-center justify-center gap-2 text-white/50 text-sm" style={{ fontFamily: 'Satoshi, sans-serif' }}>
-                      <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />{r}
-                    </div>
-                  ))}
-                </div>
-              </div>
+      {/* ══════════════════════════════════════════════════════════════════════
+          INTERNATIONAL FLIGHTS — white
+      ══════════════════════════════════════════════════════════════════════ */}
+      <section className="py-28 px-6 bg-white">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-14 xl:gap-20 items-center">
+
+          {/* Image panel */}
+          <motion.div {...fadeUp} className="relative">
+            <div className="relative rounded-3xl overflow-hidden aspect-[4/3]"
+              style={{ boxShadow: '0 24px 80px -16px rgba(13,27,56,0.2)' }}>
+              <img src={IMG_FLIGHTS} alt="Aircraft at dusk" className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" />
+              <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(13,27,56,0.6) 0%, transparent 55%)' }} />
             </div>
+
+            {/* Floating stat card */}
+            <motion.div
+              className="absolute -bottom-5 -right-5 md:right-6 rounded-2xl p-4 min-w-[170px]"
+              style={{ background: '#0d1b38', border: '1px solid rgba(168,204,232,0.15)', boxShadow: '0 16px 48px -8px rgba(13,27,56,0.5)' }}
+              initial={{ opacity: 0, y: 16, scale: 0.95 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: false }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.25 }}
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'rgba(74,144,217,0.2)' }}>
+                  <Plane className="w-3.5 h-3.5 text-blue-400" />
+                </div>
+                <span className="text-white/50 text-[10px] font-bold uppercase tracking-[0.15em]" style={{ fontFamily: 'Satoshi, sans-serif' }}>Routes</span>
+              </div>
+              <p className="text-3xl font-black text-white leading-none" style={{ fontFamily: 'Clash Display, sans-serif' }}>120+</p>
+              <p className="text-white/35 text-xs mt-1" style={{ fontFamily: 'Satoshi, sans-serif' }}>International destinations</p>
+            </motion.div>
+
+            {/* Decorative ring */}
+            <div className="absolute -top-4 -left-4 w-20 h-20 rounded-full pointer-events-none"
+              style={{ border: '1px solid rgba(74,144,217,0.2)', background: 'rgba(74,144,217,0.04)' }} />
           </motion.div>
 
-          <motion.div {...fadeUp} transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1], delay: 0.15 }} className="space-y-6">
-            <p className="text-blue-600 text-sm font-bold tracking-widest uppercase" style={{ fontFamily: 'Satoshi, sans-serif' }}>
-              {t('services_page.flights_eyebrow')}
-            </p>
-            <h2 className="text-4xl md:text-5xl font-black tracking-tight text-[#1a2f5a]" style={{ fontFamily: 'Clash Display, sans-serif' }}>
+          {/* Text panel */}
+          <motion.div {...fadeUp} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.1 }} className="space-y-6">
+            <SectionEyebrow label={t('services_page.flights_eyebrow')} />
+            <h2 className="text-4xl md:text-5xl font-black tracking-tight leading-[0.95]"
+              style={{ fontFamily: 'Clash Display, sans-serif', color: '#0d1b38' }}>
               {t('services_page.flights_heading')}
             </h2>
-            <div className="space-y-4 text-slate-500 leading-relaxed text-lg" style={{ fontFamily: 'Satoshi, sans-serif' }}>
+            <div className="space-y-4 leading-[1.8]" style={{ fontFamily: 'Satoshi, sans-serif', color: 'rgba(13,27,56,0.52)', fontSize: '1.0625rem' }}>
               <p>{t('services_page.flights_body1')}</p>
               <p>{t('services_page.flights_body2')}</p>
             </div>
 
             <div>
-              <p className="text-xs font-bold tracking-[0.2em] uppercase text-slate-400 mb-3" style={{ fontFamily: 'Satoshi, sans-serif' }}>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-3" style={{ fontFamily: 'Satoshi, sans-serif', color: 'rgba(13,27,56,0.3)' }}>
                 {t('services_page.popular_routes')}
               </p>
-              <RouteTags routes={FLIGHT_ROUTES} />
+              <div className="flex flex-wrap gap-2">
+                {FLIGHT_ROUTES.map((r) => <RoutePill key={r} label={r} />)}
+              </div>
             </div>
 
-            <Link to="/enquiries"
-              className="mt-4 group inline-flex items-center gap-2.5 rounded-full px-7 py-3.5 text-sm font-bold text-white transition-all duration-300 hover:scale-[1.02]"
-              style={{ fontFamily: 'Satoshi, sans-serif', background: 'linear-gradient(135deg, #1a3566 0%, #0d1b38 100%)', boxShadow: '0 8px 24px rgba(13,27,56,0.25)' }}>
-              {t('services_page.enquire_trip')} <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-            </Link>
+            <EnquireButton label={t('services_page.enquire_trip')} />
           </motion.div>
         </div>
       </section>
 
-      {/* ── SECTION 3: ROAD TRAVEL ── */}
-      <section className="py-28 px-6 bg-[#0d1b38]">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-          <motion.div {...fadeUp} className="space-y-6">
-            <p className="text-blue-400 text-sm font-bold tracking-widest uppercase" style={{ fontFamily: 'Satoshi, sans-serif' }}>
-              {t('services_page.road_eyebrow')}
-            </p>
-            <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white" style={{ fontFamily: 'Clash Display, sans-serif' }}>
+      {/* ══════════════════════════════════════════════════════════════════════
+          WEST AFRICA ROAD TRAVEL — dark navy
+      ══════════════════════════════════════════════════════════════════════ */}
+      <section className="py-28 px-6 bg-[#0d1b38] relative overflow-hidden">
+        {/* Ambient glow */}
+        <div className="absolute top-1/2 right-0 w-[500px] h-[500px] rounded-full pointer-events-none -translate-y-1/2"
+          style={{ background: 'rgba(74,144,217,0.07)', filter: 'blur(100px)' }} />
+
+        <div className="relative max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-14 xl:gap-20 items-center">
+
+          {/* Text panel */}
+          <motion.div {...fadeUp} className="space-y-6 order-2 lg:order-1">
+            <SectionEyebrow label={t('services_page.road_eyebrow')} dark />
+            <h2 className="text-4xl md:text-5xl font-black tracking-tight leading-[0.95] text-white"
+              style={{ fontFamily: 'Clash Display, sans-serif' }}>
               {t('services_page.road_heading')}
             </h2>
-            <div className="space-y-4 text-white/50 leading-relaxed text-lg" style={{ fontFamily: 'Satoshi, sans-serif' }}>
+            <div className="space-y-4 leading-[1.8]" style={{ fontFamily: 'Satoshi, sans-serif', color: 'rgba(255,255,255,0.48)', fontSize: '1.0625rem' }}>
               <p>{t('services_page.road_body1')}</p>
               <p>{t('services_page.road_body2')}</p>
             </div>
 
-            <RouteTags routes={ROAD_ROUTES} />
-
-            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {ROAD_FEATURE_KEYS.map((key) => (
-                <div key={key} className="flex items-center gap-2.5">
-                  <CheckCircle className="w-4 h-4 text-blue-400 shrink-0" />
-                  <span className="text-sm text-white/55" style={{ fontFamily: 'Satoshi, sans-serif' }}>{t(`services_page.${key}`)}</span>
-                </div>
+            {/* Route pills — white-ish on dark */}
+            <div className="flex flex-wrap gap-2">
+              {ROAD_ROUTES.map((r) => (
+                <span key={r}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold"
+                  style={{ fontFamily: 'Satoshi, sans-serif', background: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <span className="w-1 h-1 rounded-full bg-blue-400" />
+                  {r}
+                </span>
               ))}
             </div>
 
-            <Link to="/enquiries"
-              className="mt-4 group inline-flex items-center gap-2.5 rounded-full px-7 py-3.5 text-sm font-bold text-white transition-all duration-300 hover:scale-[1.02]"
-              style={{ fontFamily: 'Satoshi, sans-serif', background: 'linear-gradient(135deg, #1a3566 0%, #0d1b38 100%)', boxShadow: '0 8px 24px rgba(13,27,56,0.25)' }}>
-              {t('services_page.enquire_trip')} <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-            </Link>
+            {/* Feature grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              {ROAD_FEATURES.map(({ Icon, title, body }, i) => (
+                <motion.div
+                  key={title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: false, margin: '-30px' }}
+                  transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: i * 0.07 }}
+                  className="flex items-start gap-3 p-4 rounded-2xl"
+                  style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
+                >
+                  <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
+                    style={{ background: 'rgba(74,144,217,0.15)' }}>
+                    <Icon className="w-3.5 h-3.5 text-blue-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-black text-white leading-tight" style={{ fontFamily: 'Clash Display, sans-serif' }}>{title}</p>
+                    <p className="text-[12px] text-white/35 mt-0.5 leading-snug" style={{ fontFamily: 'Satoshi, sans-serif' }}>{body}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            <EnquireButton dark label={t('services_page.enquire_trip')} />
           </motion.div>
 
-          <motion.div {...fadeUp} transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}>
-            <div className="rounded-2xl overflow-hidden aspect-[4/3] flex items-center justify-center relative"
-              style={{ background: 'linear-gradient(135deg, #0f2244 0%, #162d55 50%, #1a3566 100%)' }}>
-              <div className="absolute inset-0 flex items-center justify-center opacity-10">
-                <Map className="w-48 h-48 text-blue-300" strokeWidth={0.5} />
-              </div>
-              <div className="relative z-10 text-center px-8">
-                <p className="text-white/30 text-sm tracking-widest uppercase mb-3" style={{ fontFamily: 'Satoshi, sans-serif' }}>West Africa</p>
-                <p className="text-white text-4xl font-black" style={{ fontFamily: 'Clash Display, sans-serif' }}>Road Travel</p>
-                <div className="mt-6 flex flex-col gap-2">
-                  {ROAD_ROUTES.slice(0, 3).map((r) => (
-                    <div key={r} className="flex items-center justify-center gap-2 text-white/50 text-sm" style={{ fontFamily: 'Satoshi, sans-serif' }}>
-                      <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />{r}
-                    </div>
-                  ))}
+          {/* Image panel */}
+          <motion.div {...fadeUp} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.12 }}
+            className="relative order-1 lg:order-2">
+            <div className="relative rounded-3xl overflow-hidden aspect-[4/3]"
+              style={{ boxShadow: '0 24px 80px -16px rgba(0,0,0,0.5)' }}>
+              <img src={IMG_ROAD} alt="Open road through mountains" className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" />
+              <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(13,27,56,0.5) 0%, transparent 55%)' }} />
+
+              {/* Inline label */}
+              <div className="absolute bottom-5 left-5 right-5">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full"
+                  style={{ background: 'rgba(13,27,56,0.75)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.12)' }}>
+                  <MapPin className="w-3.5 h-3.5 text-blue-400" />
+                  <span className="text-white text-xs font-bold" style={{ fontFamily: 'Satoshi, sans-serif' }}>West Africa · 5 countries covered</span>
                 </div>
               </div>
             </div>
+
+            {/* Floating check card */}
+            <motion.div
+              className="absolute -top-5 -right-4 md:right-6 rounded-2xl p-4"
+              style={{ background: 'rgba(52,211,153,0.12)', border: '1px solid rgba(52,211,153,0.25)', backdropFilter: 'blur(12px)' }}
+              initial={{ opacity: 0, y: -12, scale: 0.95 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: false }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
+            >
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-emerald-400" />
+                <span className="text-emerald-300 text-xs font-bold" style={{ fontFamily: 'Satoshi, sans-serif' }}>4.9★ driver rating</span>
+              </div>
+              <p className="text-white/40 text-[11px] mt-1" style={{ fontFamily: 'Satoshi, sans-serif' }}>Verified by 1,200+ clients</p>
+            </motion.div>
           </motion.div>
         </div>
       </section>
 
-      {/* ── SECTION 4: LATIN AMERICA EXPEDITIONS ── */}
-      <section className="py-28 px-6 bg-[#f5f8fc]">
+      {/* ══════════════════════════════════════════════════════════════════════
+          LATIN AMERICA EXPEDITIONS — white
+      ══════════════════════════════════════════════════════════════════════ */}
+      <section className="py-28 px-6 bg-white">
         <div className="max-w-7xl mx-auto">
-          <motion.div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start mb-14" {...fadeUp}>
-            <div className="space-y-6">
-              <p className="text-blue-600 text-sm font-bold tracking-widest uppercase" style={{ fontFamily: 'Satoshi, sans-serif' }}>
-                {t('services_page.latam_eyebrow')}
-              </p>
-              <h2 className="text-4xl md:text-5xl font-black tracking-tight text-[#1a2f5a]" style={{ fontFamily: 'Clash Display, sans-serif' }}>
+
+          {/* Intro split */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 xl:gap-20 items-center mb-20">
+            <motion.div {...fadeUp} className="space-y-6">
+              <SectionEyebrow label={t('services_page.latam_eyebrow')} />
+              <h2 className="text-4xl md:text-5xl font-black tracking-tight leading-[0.95]"
+                style={{ fontFamily: 'Clash Display, sans-serif', color: '#0d1b38' }}>
                 {t('services_page.latam_heading')}
               </h2>
-              <div className="space-y-4 text-slate-500 leading-relaxed text-lg" style={{ fontFamily: 'Satoshi, sans-serif' }}>
+              <div className="space-y-4 leading-[1.8]" style={{ fontFamily: 'Satoshi, sans-serif', color: 'rgba(13,27,56,0.52)', fontSize: '1.0625rem' }}>
                 <p>{t('services_page.latam_body1')}</p>
                 <p>{t('services_page.latam_body2')}</p>
               </div>
-              <Link to="/enquiries"
-                className="inline-flex items-center gap-2.5 rounded-full px-7 py-3.5 text-sm font-bold text-white transition-all duration-300 hover:scale-[1.02]"
-                style={{ fontFamily: 'Satoshi, sans-serif', background: 'linear-gradient(135deg, #1a3566 0%, #0d1b38 100%)', boxShadow: '0 8px 24px rgba(13,27,56,0.25)' }}>
-                {t('services_page.enquire_trip')}
-              </Link>
-            </div>
-            <div className="rounded-2xl overflow-hidden aspect-[4/3] flex items-center justify-center relative"
-              style={{ background: 'linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%)' }}>
-              <div className="absolute inset-0 opacity-10 flex items-center justify-center">
-                <Compass className="w-48 h-48 text-emerald-300" strokeWidth={0.5} />
-              </div>
-              <div className="relative z-10 text-center px-8">
-                <p className="text-emerald-300/60 text-sm tracking-widest uppercase mb-3" style={{ fontFamily: 'Satoshi, sans-serif' }}>North & South America</p>
-                <p className="text-white text-3xl font-black" style={{ fontFamily: 'Clash Display, sans-serif' }}>Overland Expeditions</p>
-              </div>
-            </div>
-          </motion.div>
+              <EnquireButton label={t('services_page.enquire_trip')} />
+            </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {EXPEDITIONS.map((pkg, i) => (
-              <motion.div key={pkg.title} {...fadeUp} transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1], delay: i * 0.08 }}
-                className="p-7 rounded-2xl bg-white border border-slate-100 hover:border-blue-200 hover:shadow-lg transition-all duration-400 group">
-                <div className="flex items-start justify-between mb-3">
-                  <h3 className="text-lg font-bold text-[#1a2f5a]" style={{ fontFamily: 'Clash Display, sans-serif' }}>{pkg.title}</h3>
-                  <span className="shrink-0 ml-3 px-2.5 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-600" style={{ fontFamily: 'Satoshi, sans-serif' }}>
-                    {pkg.duration}
-                  </span>
+            <motion.div {...fadeUp} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.12 }} className="relative">
+              <div className="relative rounded-3xl overflow-hidden aspect-[4/3]"
+                style={{ boxShadow: '0 24px 80px -16px rgba(13,27,56,0.18)' }}>
+                <img src={IMG_LATAM} alt="Patagonia expedition landscape" className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" />
+                <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(13,27,56,0.55) 0%, transparent 55%)' }} />
+                <div className="absolute bottom-5 left-5">
+                  <div className="flex items-center gap-2 px-4 py-2 rounded-full"
+                    style={{ background: 'rgba(13,27,56,0.7)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.12)' }}>
+                    <Compass className="w-3.5 h-3.5 text-blue-400" />
+                    <span className="text-white text-xs font-bold" style={{ fontFamily: 'Satoshi, sans-serif' }}>4 signature expeditions</span>
+                  </div>
                 </div>
-                <p className="text-sm text-slate-500 leading-relaxed mb-3" style={{ fontFamily: 'Satoshi, sans-serif' }}>{pkg.desc}</p>
-                <p className="text-xs text-slate-400" style={{ fontFamily: 'Satoshi, sans-serif' }}>
-                  <span className="font-semibold">{t('services_page.includes')}:</span> {pkg.includes}
-                </p>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Expedition cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {EXPEDITIONS.map((exp, i) => (
+              <motion.div
+                key={exp.title}
+                initial={{ opacity: 0, y: 32 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false, margin: '-40px' }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: i * 0.08 }}
+                className="group relative rounded-3xl overflow-hidden"
+                style={{ border: '1px solid rgba(13,27,56,0.07)', boxShadow: '0 4px 24px -6px rgba(13,27,56,0.08)' }}
+              >
+                {/* Image strip */}
+                <div className="relative h-44 overflow-hidden">
+                  <img src={exp.image} alt={exp.title}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-107"
+                    style={{ objectPosition: 'center 40%' }} />
+                  <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, transparent 30%, rgba(13,27,56,0.75) 100%)' }} />
+
+                  {/* Duration badge */}
+                  <div className="absolute top-4 right-4">
+                    <span className="px-3 py-1.5 rounded-full text-xs font-black"
+                      style={{ fontFamily: 'Satoshi, sans-serif', background: exp.accent, color: '#0d1b38' }}>
+                      {exp.duration}
+                    </span>
+                  </div>
+
+                  {/* Title on image */}
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <h3 className="text-lg font-black text-white leading-tight" style={{ fontFamily: 'Clash Display, sans-serif' }}>
+                      {exp.title}
+                    </h3>
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="p-5 bg-white">
+                  <p className="text-sm leading-relaxed mb-4" style={{ fontFamily: 'Satoshi, sans-serif', color: 'rgba(13,27,56,0.55)' }}>
+                    {exp.desc}
+                  </p>
+
+                  {/* Includes chips */}
+                  <div className="flex flex-wrap gap-1.5">
+                    {exp.includes.split(' · ').map((item) => (
+                      <span key={item}
+                        className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold"
+                        style={{ fontFamily: 'Satoshi, sans-serif', background: `${exp.accent}12`, color: exp.accent, border: `1px solid ${exp.accent}22` }}>
+                        <CheckCircle className="w-3 h-3" />
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Enquire link */}
+                  <Link to="/enquiries"
+                    className="inline-flex items-center gap-1.5 mt-5 text-sm font-bold transition-colors duration-200"
+                    style={{ fontFamily: 'Satoshi, sans-serif', color: exp.accent }}>
+                    Enquire about this expedition
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
               </motion.div>
             ))}
           </div>

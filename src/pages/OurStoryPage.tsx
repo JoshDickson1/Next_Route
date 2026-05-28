@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Shield, Zap, Heart, Compass } from 'lucide-react';
+import { ArrowRight, Shield, Zap, Heart, Compass, Plane, MapPin, BookOpen } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { CTABanner } from '@/components/CTABanner';
 import { SEOHead } from '@/components/SEOHead';
@@ -13,9 +13,33 @@ const fadeUp = {
 };
 
 const VALUE_KEYS = [
-  { Icon: Zap,     nameKey: 'value_reliability_name', bodyKey: 'value_reliability_body' },
-  { Icon: Shield,  nameKey: 'value_safety_name',      bodyKey: 'value_safety_body' },
-  { Icon: Heart,   nameKey: 'value_passion_name',     bodyKey: 'value_passion_body' },
+  { Icon: Zap,    nameKey: 'value_reliability_name', bodyKey: 'value_reliability_body', accent: '#3b82f6', iconBg: 'rgba(59,130,246,0.15)', border: 'rgba(59,130,246,0.2)'  },
+  { Icon: Shield, nameKey: 'value_safety_name',      bodyKey: 'value_safety_body',      accent: '#10b981', iconBg: 'rgba(16,185,129,0.15)', border: 'rgba(16,185,129,0.2)'  },
+  { Icon: Heart,  nameKey: 'value_passion_name',     bodyKey: 'value_passion_body',     accent: '#f43f5e', iconBg: 'rgba(244,63,94,0.15)',  border: 'rgba(244,63,94,0.2)'   },
+];
+
+const SERVICES = [
+  {
+    Icon: Plane,
+    label: 'Global Air Connections',
+    bodyKey: 'what_we_do_body1',
+    accent: '#60a5fa',
+    bg: 'rgba(96,165,250,0.08)',
+  },
+  {
+    Icon: MapPin,
+    label: 'Cross-Border Travel',
+    bodyKey: 'what_we_do_body2',
+    accent: '#34d399',
+    bg: 'rgba(52,211,153,0.08)',
+  },
+  {
+    Icon: BookOpen,
+    label: 'Destination Intelligence',
+    bodyKey: 'what_we_do_body3',
+    accent: '#fbbf24',
+    bg: 'rgba(251,191,36,0.08)',
+  },
 ];
 
 export default function OurStoryPage() {
@@ -101,11 +125,16 @@ export default function OurStoryPage() {
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {VALUE_KEYS.map(({ Icon, nameKey, bodyKey }, i) => (
+            {VALUE_KEYS.map(({ Icon, nameKey, bodyKey, accent, iconBg, border }, i) => (
               <motion.div key={nameKey} {...fadeUp} transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1], delay: i * 0.12 }}
-                className="p-8 rounded-2xl border border-white/08 bg-white/[0.03] hover:bg-white/[0.06] hover:border-white/15 transition-all duration-500">
-                <div className="w-12 h-12 rounded-xl bg-blue-900/50 flex items-center justify-center mb-6">
-                  <Icon className="w-5 h-5 text-blue-300" />
+                className="relative p-8 rounded-2xl transition-all duration-500 overflow-hidden group"
+                style={{ background: 'rgba(255,255,255,0.03)', border: `1px solid ${border}` }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.06)'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.03)'; }}
+              >
+                <div className="absolute top-0 left-0 right-0 h-px" style={{ background: `linear-gradient(90deg, transparent, ${accent}55, transparent)` }} />
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-6" style={{ background: iconBg }}>
+                  <Icon className="w-5 h-5" style={{ color: accent }} />
                 </div>
                 <h3 className="text-xl font-black text-white mb-4" style={{ fontFamily: 'Clash Display, sans-serif' }}>
                   {t(`our_story_page.${nameKey}`)}
@@ -121,9 +150,9 @@ export default function OurStoryPage() {
 
       {/* ── WHAT WE DO ── */}
       <section className="py-28 px-6 bg-[#f5f8fc]">
-        <div className="max-w-3xl mx-auto">
-          <motion.div {...fadeUp} className="space-y-6">
-            <div className="inline-flex items-center gap-2 rounded-full border border-navy/10 bg-white px-4 py-1.5">
+        <div className="max-w-7xl mx-auto">
+          <motion.div {...fadeUp} className="mb-14">
+            <div className="inline-flex items-center gap-2 rounded-full border border-navy/10 bg-white px-4 py-1.5 mb-5">
               <span className="text-[11px] font-bold tracking-[0.2em] uppercase text-navy/60" style={{ fontFamily: 'Satoshi, sans-serif' }}>
                 {t('our_story_page.what_we_do_eyebrow')}
               </span>
@@ -131,12 +160,34 @@ export default function OurStoryPage() {
             <h2 className="text-4xl md:text-5xl font-black tracking-tight text-[#1a2f5a]" style={{ fontFamily: 'Clash Display, sans-serif' }}>
               {t('our_story_page.what_we_do_heading')}
             </h2>
-            <div className="space-y-4 text-slate-500 leading-loose text-lg" style={{ fontFamily: 'Satoshi, sans-serif' }}>
-              <p>{t('our_story_page.what_we_do_body1')}</p>
-              <p>{t('our_story_page.what_we_do_body2')}</p>
-              <p>{t('our_story_page.what_we_do_body3')}</p>
-            </div>
           </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {SERVICES.map(({ Icon, label, bodyKey, accent, bg }, i) => (
+              <motion.div key={label} {...fadeUp} transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1], delay: i * 0.12 }}
+                className="relative rounded-2xl p-8 overflow-hidden group"
+                style={{ background: bg, border: `1px solid ${accent}30` }}
+              >
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                  style={{ background: `radial-gradient(circle at 30% 20%, ${accent}10, transparent 70%)` }} />
+                <div className="relative">
+                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-sm"
+                    style={{ background: `${accent}18`, border: `1px solid ${accent}30` }}>
+                    <Icon className="w-6 h-6" style={{ color: accent }} />
+                  </div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-5 h-px" style={{ background: accent }} />
+                    <span className="text-[11px] font-bold tracking-[0.18em] uppercase" style={{ color: accent, fontFamily: 'Satoshi, sans-serif' }}>
+                      {label}
+                    </span>
+                  </div>
+                  <p className="text-slate-600 leading-relaxed text-[15px]" style={{ fontFamily: 'Satoshi, sans-serif' }}>
+                    {t(`our_story_page.${bodyKey}`)}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 

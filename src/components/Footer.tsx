@@ -19,6 +19,8 @@ const NAV_COLS = [
     headingKey: 'footer.company_col',
     links: [
       { to: '/our-story',  labelKey: 'nav.our_story' },
+      { to: '/team',       labelKey: 'nav.team'      },
+      { to: '/reviews',    labelKey: 'nav.reviews'   },
       { to: '/enquiries',  labelKey: 'nav.enquiries' },
     ],
   },

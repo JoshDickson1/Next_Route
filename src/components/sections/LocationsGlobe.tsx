@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
 import { motion, useMotionValue, useSpring, useInView } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { Map, MapArc, MapMarker, MarkerContent, MarkerLabel } from '@/components/ui/map';
+import { Globe } from '@/components/ui/cobe-globe';
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 
@@ -25,11 +25,33 @@ const EXTRA_DOTS = [
   { name: 'Istanbul',  lng: 28.9784,  lat: 41.0082  },
 ];
 
-const ARCS = LOCATIONS.map((loc) => ({
-  id: loc.name,
-  from: [HUB.lng, HUB.lat] as [number, number],
-  to:   [loc.lng, loc.lat]  as [number, number],
-}));
+// cobe uses [lat, lng] order (opposite of MapLibre)
+const COBE_MARKERS = [
+  { id: 'hub',      location: [HUB.lat,   HUB.lng]   as [number, number], label: 'Lagos'     },
+  ...LOCATIONS.map((loc) => ({
+    id: loc.name,
+    location: [loc.lat, loc.lng] as [number, number],
+    label: loc.name,
+  })),
+  ...EXTRA_DOTS.map((d) => ({
+    id: d.name,
+    location: [d.lat, d.lng] as [number, number],
+    label: d.name,
+  })),
+];
+
+const COBE_ARCS = [
+  ...LOCATIONS.map((loc) => ({
+    id:   loc.name,
+    from: [HUB.lat, HUB.lng] as [number, number],
+    to:   [loc.lat, loc.lng] as [number, number],
+  })),
+  ...EXTRA_DOTS.map((d) => ({
+    id:   d.name,
+    from: [HUB.lat, HUB.lng] as [number, number],
+    to:   [d.lat,   d.lng]   as [number, number],
+  })),
+];
 
 const STATS = [
   { value: 12, suffix: '+', labelKey: 'locations_globe.cities'     },
@@ -90,69 +112,26 @@ function CountUp({ to, suffix }: { to: number; suffix: string }) {
 
 function GlobeMap() {
   return (
-    <div className="h-[460px] md:h-[960px] w-full">
-      <Map
-        center={[HUB.lng, HUB.lat]}
-        zoom={1.4}
-        projection={{ type: 'globe' }}
-        theme="light"
-        interactive
-        scrollZoom={false}
-        doubleClickZoom
-        attributionControl={false}
-      >
-        {/* Route arcs */}
-        <MapArc
-          data={ARCS}
-          paint={{
-            'line-color':     '#3b82f6',
-            'line-width':     1.5,
-            'line-dasharray': [2, 2],
-            'line-opacity':   0.7,
-          }}
-          interactive={false}
-        />
-
-        {/* Hub — Lagos: gold pulse dot */}
-        <MapMarker longitude={HUB.lng} latitude={HUB.lat}>
-          <MarkerContent>
-            <div
-              className="size-3.5 rounded-full border-2 border-white"
-              style={{
-                background: '#f5d27a',
-                boxShadow: '0 0 0 4px rgba(245,210,122,0.3), 0 0 10px 2px rgba(245,210,122,0.4)',
-              }}
-            />
-            <MarkerLabel position="top" className="text-[#1a2f5a] text-[10px] font-bold tracking-wide">
-              {HUB.name}
-            </MarkerLabel>
-          </MarkerContent>
-        </MapMarker>
-
-        {/* Destination markers */}
-        {LOCATIONS.map((loc) => (
-          <MapMarker key={loc.name} longitude={loc.lng} latitude={loc.lat}>
-            <MarkerContent>
-              <div
-                className="size-2 rounded-full border-2 border-white"
-                style={{ background: '#3b82f6' }}
-              />
-              <MarkerLabel position="top" className="text-[#1a2f5a] text-[9px] font-medium">
-                {loc.city}
-              </MarkerLabel>
-            </MarkerContent>
-          </MapMarker>
-        ))}
-
-        {/* Ambient dots */}
-        {EXTRA_DOTS.map((d) => (
-          <MapMarker key={d.name} longitude={d.lng} latitude={d.lat}>
-            <MarkerContent>
-              <div className="size-1.5 rounded-full bg-white/15" />
-            </MarkerContent>
-          </MapMarker>
-        ))}
-      </Map>
+    <div className="w-full aspect-square max-w-[560px] mx-auto lg:max-w-none">
+      <Globe
+        markers={COBE_MARKERS}
+        arcs={COBE_ARCS}
+        dark={1}
+        baseColor={[0.07, 0.14, 0.30]}
+        markerColor={[0.29, 0.55, 0.85]}
+        arcColor={[0.66, 0.80, 0.93]}
+        glowColor={[0.05, 0.16, 0.45]}
+        mapBrightness={4}
+        mapSamples={20000}
+        markerSize={0.04}
+        markerElevation={0.01}
+        arcWidth={1.2}
+        arcHeight={0.32}
+        speed={0.004}
+        theta={0.15}
+        diffuse={1.2}
+        className="w-full"
+      />
     </div>
   );
 }
@@ -229,9 +208,7 @@ export function LocationsGlobe() {
             viewport={{ once: false, margin: '-80px' }}
             transition={{ duration: 0.95, ease: [0.22, 1, 0.36, 1] }}
           >
-            <div className="rounded-2xl overflow-hidden">
-              <GlobeMap />
-            </div>
+            <GlobeMap />
           </motion.div>
 
           {/* ── Right: Content ── */}
