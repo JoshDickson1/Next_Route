@@ -44,17 +44,12 @@ function CloudC() {
 
 const SHAPES = { a: CloudA, b: CloudB, c: CloudC }
 
-// ── Cloud definitions ─────────────────────────────────────────────────────────
-// blur: px — creates depth (front: soft, back: very soft)
-
 const CLOUD_DEFS = [
-  // front row — most opaque, gentle blur
   { left: '-5%',  w: '38%', bot: -5,  op: 0.95, blur: 3,  fx:  11, fy: 4, dur: 5.6, dl: 0.0, s: 'a' },
   { left: '24%',  w: '46%', bot: -8,  op: 0.92, blur: 2,  fx:  -9, fy: 3, dur: 6.3, dl: 0.4, s: 'c' },
   { left: '58%',  w: '40%', bot: -4,  op: 0.90, blur: 4,  fx:  13, fy: 5, dur: 5.1, dl: 0.2, s: 'a' },
   { left: '88%',  w: '32%', bot: -6,  op: 0.88, blur: 3,  fx: -10, fy: 4, dur: 6.9, dl: 0.7, s: 'b' },
   { left: '-12%', w: '30%', bot: -10, op: 0.85, blur: 4,  fx:   8, fy: 3, dur: 5.9, dl: 0.5, s: 'c' },
-  // mid row — moderate blur
   { left: '-7%',  w: '32%', bot: 60,  op: 0.72, blur: 7,  fx:  -8, fy: 3, dur: 7.1, dl: 0.9, s: 'b' },
   { left: '13%',  w: '40%', bot: 54,  op: 0.68, blur: 6,  fx:  10, fy: 4, dur: 6.0, dl: 0.3, s: 'a' },
   { left: '42%',  w: '34%', bot: 64,  op: 0.74, blur: 7,  fx: -12, fy: 3, dur: 5.8, dl: 0.6, s: 'c' },
@@ -62,7 +57,6 @@ const CLOUD_DEFS = [
   { left: '100%', w: '26%', bot: 58,  op: 0.60, blur: 8,  fx:  -7, fy: 3, dur: 6.5, dl: 1.1, s: 'b' },
   { left: '30%',  w: '28%', bot: 74,  op: 0.63, blur: 7,  fx:  11, fy: 4, dur: 6.8, dl: 0.4, s: 'c' },
   { left: '-2%',  w: '22%', bot: 68,  op: 0.58, blur: 8,  fx:  -9, fy: 3, dur: 7.8, dl: 0.8, s: 'a' },
-  // back row — high blur, wispy
   { left: '-4%',  w: '28%', bot: 118, op: 0.42, blur: 11, fx:   6, fy: 3, dur: 8.2, dl: 0.5, s: 'b' },
   { left: '17%',  w: '36%', bot: 112, op: 0.38, blur: 13, fx:  -8, fy: 4, dur: 7.6, dl: 0.8, s: 'c' },
   { left: '43%',  w: '32%', bot: 122, op: 0.45, blur: 10, fx:  10, fy: 2, dur: 6.8, dl: 0.2, s: 'a' },
@@ -72,7 +66,6 @@ const CLOUD_DEFS = [
   { left: '54%',  w: '26%', bot: 128, op: 0.32, blur: 13, fx:   7, fy: 2, dur: 8.4, dl: 1.0, s: 'b' },
 ] as const
 
-// Ghost peek clouds visible while plane is on screen
 const PEEK_DEFS = [
   { left: '-5%',  w: '42%', bot: -55, op: 0.13, blur: 18, fx:  8, fy: 2, dur: 7.0, dl: 0.0, s: 'c' },
   { left: '27%',  w: '50%', bot: -65, op: 0.10, blur: 22, fx: -7, fy: 2, dur: 8.5, dl: 0.5, s: 'a' },
@@ -84,14 +77,14 @@ function CloudItem({ def }: { def: typeof CLOUD_DEFS[number] | typeof PEEK_DEFS[
   const Shape = SHAPES[def.s as keyof typeof SHAPES]
   return (
     <motion.div
-      className="absolute"
+      className="absolute will-change-transform"
       style={{
-        left:    def.left,
-        bottom:  def.bot,
-        width:   def.w,
-        height:  130,
+        left:   def.left,
+        bottom: def.bot,
+        width:  def.w,
+        height: 130,
         opacity: def.op,
-        filter:  `blur(${def.blur}px)`,
+        filter: `blur(${def.blur}px)`,
       }}
       animate={{ x: [0, def.fx, 0], y: [0, -def.fy, 0] }}
       transition={{ duration: def.dur, repeat: Infinity, ease: 'easeInOut', delay: def.dl }}
@@ -108,10 +101,10 @@ export function LoadingScreen({ onDone }: { onDone: () => void }) {
 
   useEffect(() => {
     const timers = [
-      setTimeout(() => setPhase('fly'),    1400),
-      setTimeout(() => setPhase('clouds'), 1500),
-      setTimeout(() => setPhase('wipe'),   2050),
-      setTimeout(onDone,                   3200),
+      setTimeout(() => setPhase('fly'),    1350),   // text blurs out, plane launches
+      setTimeout(() => setPhase('clouds'), 1420),   // clouds rise (tight overlap with fly)
+      setTimeout(() => setPhase('wipe'),   1620),   // curtain sweep
+      setTimeout(onDone,                   3150),   // unmount
     ]
     return () => timers.forEach(clearTimeout)
   }, [onDone])
@@ -121,10 +114,11 @@ export function LoadingScreen({ onDone }: { onDone: () => void }) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-[200] overflow-hidden"
+      className="fixed inset-0 z-[200] overflow-hidden will-change-transform"
       style={{ background: 'linear-gradient(175deg, #020912 0%, #07142a 40%, #0a1c3e 70%, #050f22 100%)' }}
       animate={{ y: phase === 'wipe' ? '-102%' : '0%' }}
-      transition={{ duration: 1.15, ease: [0.76, 0, 0.24, 1] }}
+      // smoother curtain: starts fast, eases at the very end
+      transition={{ duration: 1.15, ease: [0.87, 0, 0.13, 1] }}
     >
       {/* Dot-grid texture */}
       <div
@@ -136,95 +130,175 @@ export function LoadingScreen({ onDone }: { onDone: () => void }) {
         }}
       />
 
-      {/* Glow behind plane */}
-      <div
+      {/* Radial glow behind plane */}
+      <motion.div
         aria-hidden
         className="absolute inset-0 pointer-events-none"
-        style={{
-          background: 'radial-gradient(ellipse 55% 45% at 50% 62%, rgba(74,144,217,0.16) 0%, transparent 70%)',
-        }}
+        animate={{ opacity: planeFlying ? 0 : [0.7, 1, 0.7] }}
+        transition={planeFlying
+          ? { duration: 0.4, ease: 'easeOut' }
+          : { duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 0.6 }
+        }
+        style={{ background: 'radial-gradient(ellipse 55% 45% at 50% 62%, rgba(74,144,217,0.18) 0%, transparent 70%)' }}
       />
 
-      {/* ── Ghost cloud peek (always visible, even while plane shows) ── */}
+      {/* Ghost peek clouds */}
       <div className="absolute bottom-0 left-0 right-0 pointer-events-none" style={{ height: '30%' }}>
         {PEEK_DEFS.map((d, i) => <CloudItem key={i} def={d} />)}
-        {/* soft bottom glow */}
         <div
           className="absolute bottom-0 left-0 right-0 h-16"
           style={{ background: 'linear-gradient(to top, rgba(200,220,255,0.08) 0%, transparent 100%)' }}
         />
       </div>
 
-      {/* ── Logo + tagline ── */}
-      <motion.div
-        className="absolute top-0 left-0 right-0 flex flex-col items-center pt-[16vh]"
-        initial={{ opacity: 0, y: 22 }}
-        animate={{ opacity: textGone ? 0 : 1, y: textGone ? -14 : 0 }}
-        transition={{ duration: textGone ? 0.36 : 0.75, ease: [0.22, 1, 0.36, 1], delay: textGone ? 0 : 0.16 }}
-      >
-        <img
+      {/* ── Logo — staggered entrance ── */}
+      <div className="absolute top-0 left-0 right-0 flex flex-col items-center pt-[16vh]">
+        <motion.img
           src="/assets/logo.png"
           alt="Next Route Travels"
           className="h-10 w-auto mb-4"
           style={{ filter: 'brightness(0) invert(1)' }}
+          initial={{ opacity: 0, scale: 0.88 }}
+          animate={{
+            opacity: textGone ? 0 : 1,
+            scale:   textGone ? 0.9 : 1,
+            filter:  textGone
+              ? 'brightness(0) invert(1) blur(6px)'
+              : 'brightness(0) invert(1) blur(0px)',
+          }}
+          transition={{
+            duration: textGone ? 0.38 : 0.7,
+            ease: [0.22, 1, 0.36, 1],
+            delay: textGone ? 0 : 0.12,
+          }}
         />
-        <p
+
+        <motion.p
           className="text-white text-[1.65rem] sm:text-[2.1rem] font-black tracking-tight leading-none"
           style={{ fontFamily: 'Clash Display, sans-serif' }}
+          initial={{ opacity: 0, y: 18 }}
+          animate={{
+            opacity: textGone ? 0 : 1,
+            y:       textGone ? -16 : 0,
+            filter:  textGone ? 'blur(8px)' : 'blur(0px)',
+          }}
+          transition={{
+            duration: textGone ? 0.42 : 0.72,
+            ease: [0.22, 1, 0.36, 1],
+            delay: textGone ? 0 : 0.22,
+          }}
         >
           Next Route Travels
-        </p>
-        <p
+        </motion.p>
+
+        <motion.p
           className="mt-2.5 text-[#a8cce8]/50 text-[11px] tracking-[0.32em] uppercase"
           style={{ fontFamily: 'Satoshi, sans-serif' }}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{
+            opacity: textGone ? 0 : 1,
+            y:       textGone ? -10 : 0,
+            filter:  textGone ? 'blur(6px)' : 'blur(0px)',
+          }}
+          transition={{
+            duration: textGone ? 0.35 : 0.7,
+            ease: [0.22, 1, 0.36, 1],
+            delay: textGone ? 0 : 0.34,
+          }}
         >
           Your journey begins here
-        </p>
-      </motion.div>
+        </motion.p>
+      </div>
+
+      {/* ── Progress bar ── */}
+      <div className="absolute bottom-0 left-0 right-0 h-[2px] overflow-hidden">
+        <motion.div
+          className="h-full"
+          style={{ background: 'linear-gradient(90deg, #4a90d9, #a8cce8, #4a90d9)' }}
+          initial={{ x: '-100%', opacity: 0 }}
+          animate={{
+            x: phase === 'wipe' ? '100%' : phase === 'clouds' ? '15%' : phase === 'fly' ? '0%' : '-5%',
+            opacity: phase === 'wipe' ? 0 : 1,
+          }}
+          transition={{
+            duration: phase === 'wipe' ? 0.6 : phase === 'enter' ? 1.1 : 0.55,
+            ease: phase === 'wipe' ? 'easeIn' : [0.22, 1, 0.36, 1],
+            delay: phase === 'enter' ? 0.3 : 0,
+          }}
+        />
+      </div>
 
       {/* ── Plane ── */}
       <motion.div
-        className="absolute left-0 right-0 flex justify-center"
+        className="absolute left-0 right-0 flex justify-center will-change-transform"
         style={{ top: '50%' }}
-        initial={{ y: 520, opacity: 0 }}
+        initial={{ y: 480, opacity: 0 }}
         animate={
           planeFlying
-            ? { y: -1800, opacity: [1, 1, 0.4, 0], transition: { duration: 0.92, ease: [0.55, 0, 1, 0.45] } }
-            : { y: 0, opacity: 1, transition: { delay: 0.5, duration: 1.2, ease: [0.22, 1, 0.36, 1] } }
+            ? {
+                y: -1900,
+                opacity: [1, 1, 0.6, 0],
+                transition: {
+                  duration: 0.88,
+                  ease: [0.42, 0, 0.82, 0.4],
+                  opacity: { times: [0, 0.3, 0.7, 1], duration: 0.88 },
+                },
+              }
+            : {
+                y: 0,
+                opacity: 1,
+                transition: {
+                  delay: 0.45,
+                  duration: 1.25,
+                  ease: [0.16, 1, 0.3, 1],       // decelerate softly into landing
+                  opacity: { duration: 0.6, delay: 0.45 },
+                },
+              }
         }
       >
+        {/* Soft glow under plane */}
+        <motion.div
+          className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-48 h-12 rounded-full pointer-events-none"
+          style={{ background: 'radial-gradient(ellipse, rgba(74,144,217,0.22) 0%, transparent 70%)', filter: 'blur(8px)' }}
+          animate={{ opacity: planeFlying ? 0 : [0.5, 1, 0.5] }}
+          transition={planeFlying
+            ? { duration: 0.3 }
+            : { duration: 2.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }
+          }
+        />
+
         <img
           src={planeImg}
           alt=""
           aria-hidden
           style={{
             width: 360,
-            filter: 'drop-shadow(0 24px 52px rgba(168,204,232,0.3)) drop-shadow(0 6px 16px rgba(0,0,0,0.5))',
+            filter: 'drop-shadow(0 24px 52px rgba(168,204,232,0.28)) drop-shadow(0 6px 16px rgba(0,0,0,0.5))',
             objectFit: 'contain',
           }}
         />
       </motion.div>
 
-      {/* ── Full cloud layer (appears when plane flies off) ── */}
+      {/* ── Full cloud layer ── */}
       <AnimatePresence>
         {(phase === 'clouds' || phase === 'wipe') && (
           <motion.div
             key="clouds"
             className="absolute bottom-0 left-0 right-0 pointer-events-none"
             style={{ height: '60%' }}
-            initial={{ y: 220 }}
-            animate={{ y: 0 }}
-            exit={{ y: 0 }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ y: 260, opacity: 0.3 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.95, ease: [0.16, 1, 0.3, 1] }}   // soft decelerate rise
           >
             {CLOUD_DEFS.map((d, i) => <CloudItem key={i} def={d} />)}
 
-            {/* Fog band across the top edge of the cloud layer */}
+            {/* Fog band at top edge */}
             <div
               className="absolute top-0 left-0 right-0 h-20 pointer-events-none"
               style={{ background: 'linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.12) 100%)', filter: 'blur(8px)' }}
             />
-            {/* Solid fog base at the very bottom */}
+            {/* Solid fog base */}
             <div
               className="absolute bottom-0 left-0 right-0 h-28"
               style={{ background: 'linear-gradient(to top, rgba(255,255,255,0.65) 0%, rgba(255,255,255,0.1) 70%, transparent 100%)' }}

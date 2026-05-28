@@ -5,11 +5,8 @@ import { Search, ArrowRight, X, FileText, CreditCard, Luggage, BookMarked, Chevr
 import { useTranslation } from 'react-i18next';
 import { SEOHead } from '@/components/SEOHead';
 import { DestinationCard } from '@/components/ui/card-21';
-import { WorldMap } from '@/components/ui/world-map';
 
 type Region = 'All' | 'Africa' | 'Europe' | 'Middle East' | 'Americas';
-
-const HUB = { lat: 6.5244, lng: 3.3792 };
 
 const DESTINATIONS = [
   { slug: 'rome',          name: 'Rome',          country: 'Italy',          region: 'Europe'      as Region, tags: ['Culture', 'History', 'Food'],         flag: '🇮🇹', stats: '340+ Hotels · 18 Packages', imageUrl: 'https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=1400&auto=format&fit=crop&q=85',  themeColor: '0 60% 30%',   lat: 41.9028,   lng: 12.4964   },
@@ -21,11 +18,6 @@ const DESTINATIONS = [
   { slug: 'cartagena',     name: 'Cartagena',     country: 'Colombia',       region: 'Americas'    as Region, tags: ['History', 'Beach', 'Culture'],        flag: '🇨🇴', stats: '120+ Hotels · 15 Packages', imageUrl: 'https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=1400&auto=format&fit=crop&q=85', themeColor: '270 60% 28%', lat: 10.3910,   lng: -75.4794  },
   { slug: 'buenos-aires',  name: 'Buenos Aires',  country: 'Argentina',      region: 'Americas'    as Region, tags: ['Food', 'Dance', 'Architecture'],      flag: '🇦🇷', stats: '180+ Hotels · 16 Packages', imageUrl: 'https://images.unsplash.com/photo-1589909202802-8f4aadce1849?w=1400&auto=format&fit=crop&q=85', themeColor: '168 60% 22%', lat: -34.6037,  lng: -58.3816  },
 ];
-
-const ROUTE_DOTS = DESTINATIONS.map((d) => ({
-  start: { lat: HUB.lat, lng: HUB.lng, label: 'Lagos' },
-  end:   { lat: d.lat,   lng: d.lng,   label: d.name  },
-}));
 
 const REGION_KEYS: { value: Region; key: string }[] = [
   { value: 'All',         key: 'filter_all' },
@@ -223,20 +215,54 @@ export default function DestinationsPage() {
       />
 
       {/* ── HERO ── */}
-      <section className="relative bg-[#0d1b38] overflow-hidden">
-        <div className="w-full pt-[72px]">
-          <WorldMap dots={ROUTE_DOTS} lineColor="#4a90d9" dark showLabels loop animationDuration={2.2} />
-        </div>
-        <div className="absolute inset-x-0 top-0 h-48 pointer-events-none" style={{ background: 'linear-gradient(to bottom, #0d1b38 0%, transparent 100%)' }} />
-        <div className="absolute inset-x-0 bottom-0 h-56 pointer-events-none" style={{ background: 'linear-gradient(to top, #0d1b38 0%, transparent 100%)' }} />
-        <div className="absolute inset-y-0 left-0 w-24 pointer-events-none" style={{ background: 'linear-gradient(to right, #0d1b38 0%, transparent 100%)' }} />
-        <div className="absolute inset-y-0 right-0 w-24 pointer-events-none" style={{ background: 'linear-gradient(to left, #0d1b38 0%, transparent 100%)' }} />
+      <section className="relative bg-[#0d1b38] overflow-hidden pt-[72px] pb-20 flex flex-col items-center justify-center min-h-[82vh]">
 
-        <div className="absolute inset-0 flex flex-col items-center justify-end pb-14 px-6">
+        {/* Atmospheric glows */}
+        <div className="absolute top-1/3 -right-48 w-[600px] h-[600px] rounded-full pointer-events-none"
+          style={{ background: 'radial-gradient(circle, rgba(74,144,217,0.11) 0%, transparent 65%)' }} />
+        <div className="absolute bottom-0 -left-24 w-[500px] h-[500px] rounded-full pointer-events-none"
+          style={{ background: 'radial-gradient(circle, rgba(36,58,110,0.55) 0%, transparent 70%)' }} />
+
+        {/* Subtle dot grid */}
+        <div aria-hidden className="absolute inset-0 pointer-events-none opacity-[0.022]"
+          style={{ backgroundImage: 'radial-gradient(rgba(168,204,232,0.9) 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
+
+        {/* Floating destination tags — decorative */}
+        {[
+          { name: 'Rome',         flag: '🇮🇹', top: '22%', left:  '7%',  delay: 0    },
+          { name: 'Serengeti',    flag: '🇹🇿', top: '55%', left:  '4%',  delay: 0.6  },
+          { name: 'Dubai',        flag: '🇦🇪', top: '18%', right: '6%',  delay: 1.1  },
+          { name: 'London',       flag: '🇬🇧', top: '42%', right: '5%',  delay: 0.3  },
+          { name: 'New York',     flag: '🇺🇸', top: '68%', right: '8%',  delay: 0.9  },
+          { name: 'Cartagena',    flag: '🇨🇴', top: '75%', left:  '6%',  delay: 1.4  },
+          { name: 'Buenos Aires', flag: '🇦🇷', top: '32%', left:  '14%', delay: 0.5  },
+          { name: 'Greek Islands',flag: '🇬🇷', top: '58%', right: '13%', delay: 1.7  },
+        ].map((tag, i) => (
+          <motion.div
+            key={tag.name}
+            className="absolute hidden lg:inline-flex items-center gap-2 rounded-full px-3 py-1.5 select-none pointer-events-none"
+            style={{
+              top: tag.top,
+              left: (tag as { left?: string }).left,
+              right: (tag as { right?: string }).right,
+              background: 'rgba(255,255,255,0.05)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              backdropFilter: 'blur(8px)',
+            }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: [0, 0.65, 0.65, 0], y: [10, 0, 0, -6] }}
+            transition={{ duration: 5, delay: tag.delay, repeat: Infinity, repeatDelay: 2 + i * 0.4, ease: 'easeInOut' }}
+          >
+            <span className="text-sm">{tag.flag}</span>
+            <span className="text-[12px] font-semibold text-white/70" style={{ fontFamily: 'Satoshi, sans-serif' }}>{tag.name}</span>
+          </motion.div>
+        ))}
+
+        <div className="relative z-10 w-full max-w-2xl mx-auto px-4 sm:px-6 text-center">
           <motion.div
             initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="w-full max-w-2xl text-center"
+            className="w-full"
           >
             <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 mb-4 backdrop-blur-sm">
               <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />

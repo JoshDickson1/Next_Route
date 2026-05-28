@@ -1,6 +1,6 @@
 import { useRef, useState, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-// @ts-expect-error no bundled types
+// @ts-ignore
 import DottedMap from "dotted-map"
 
 interface MapDot {
