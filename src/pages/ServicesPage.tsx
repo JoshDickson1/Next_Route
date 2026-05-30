@@ -9,13 +9,13 @@ import { CTABanner } from '@/components/CTABanner';
 import { SEOHead } from '@/components/SEOHead';
 
 // ── Images ────────────────────────────────────────────────────────────────────
-const IMG_HERO    = 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1800&auto=format&fit=crop&q=90';
-const IMG_FLIGHTS = 'https://images.unsplash.com/photo-1569629743817-70d8db6c323b?w=1200&auto=format&fit=crop&q=85';
-const IMG_ROAD    = 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1200&auto=format&fit=crop&q=85';
-const IMG_LATAM   = 'https://images.unsplash.com/photo-1482938289607-e9573fc25ebb?w=1200&auto=format&fit=crop&q=85';
+const IMG_HERO    = 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1400&auto=format&fit=crop&q=80';
+const IMG_FLIGHTS = 'https://images.unsplash.com/photo-1569629743817-70d8db6c323b?w=900&auto=format&fit=crop&q=80';
+const IMG_ROAD    = 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=900&auto=format&fit=crop&q=80';
+const IMG_RAIL    = 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=900&auto=format&fit=crop&q=80';
 
 // ── Data ──────────────────────────────────────────────────────────────────────
-const FLIGHT_ROUTES = ['Lagos → London', 'Lagos → Dubai', 'Abuja → New York', 'Lagos → Toronto', 'Abuja → Atlanta'];
+const FLIGHT_ROUTES = ['Lagos → Abuja', 'Lagos → Port Harcourt', 'Lagos → London', 'Lagos → Dubai', 'Abuja → New York', 'Lagos → Toronto'];
 const ROAD_ROUTES   = ['Lagos → Abuja', 'Lagos → Accra', 'Abuja → Kano', 'Lagos → Cotonou', 'Port Harcourt → Enugu'];
 
 const ROAD_FEATURES = [
@@ -25,37 +25,37 @@ const ROAD_FEATURES = [
   { Icon: Star,    title: '4.9-star rated',         body: 'Consistently top-rated by our travellers.' },
 ];
 
-const EXPEDITIONS = [
+const RAIL_ROUTES = [
   {
-    title:    'Colombia → Ecuador Overland',
-    duration: '14 days',
-    desc:     'Cross the Andes from Medellín to Quito, passing cloud forests, volcano corridors, and colonial towns.',
-    includes: 'SUV · Guide · Accommodation · Meals',
-    image:    'https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=700&auto=format&fit=crop&q=80',
-    accent:   '#34d399',
-  },
-  {
-    title:    'Patagonia SUV Circuit',
-    duration: '10 days',
-    desc:     'Drive the legendary Ruta 40, camp under the stars, and trek Torres del Paine.',
-    includes: 'SUV · Guide · Camping gear · Permits',
-    image:    'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=700&auto=format&fit=crop&q=80',
+    title:    'London → Paris (Eurostar)',
+    duration: '2h 15m',
+    desc:     'The iconic Channel Tunnel route connecting two of Europe\'s greatest capitals under the sea — faster than flying once you factor in airports.',
+    includes: 'Standard · Business Premier · Wi-Fi · City-centre arrival',
+    image:    'https://images.unsplash.com/photo-1474487548417-781cb6d646b3?w=500&auto=format&fit=crop&q=75',
     accent:   '#60a5fa',
   },
   {
-    title:    'Peru Sacred Valley & Amazon',
-    duration: '12 days',
-    desc:     'Machu Picchu by road, then descend into the Amazon for a once-in-a-lifetime contrast.',
-    includes: '4x4 · Bilingual guide · Cusco flights',
-    image:    'https://images.unsplash.com/photo-1526392060635-9d6019884377?w=700&auto=format&fit=crop&q=80',
+    title:    'Paris → Amsterdam (Thalys)',
+    duration: '3h 20m',
+    desc:     'Glide through Belgium and into the Netherlands on one of Europe\'s most scenic high-speed corridors — with city-centre to city-centre convenience.',
+    includes: 'Comfort 1 & 2 · Onboard dining · No airport queues',
+    image:    'https://images.unsplash.com/photo-1559825481-12a05cc00344?w=500&auto=format&fit=crop&q=75',
+    accent:   '#34d399',
+  },
+  {
+    title:    'Beijing → Shanghai (CR400AF)',
+    duration: '4h 30m',
+    desc:     'China\'s crown jewel of high-speed rail — the world\'s busiest HSR corridor, running at 350 km/h across 1,318 km of precision-engineered track.',
+    includes: '2nd class · 1st class · Business · Dining car',
+    image:    'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=500&auto=format&fit=crop&q=75',
     accent:   '#fbbf24',
   },
   {
-    title:    'Mexico City → Panama',
-    duration: '21 days',
-    desc:     'Six countries, ancient ruins, and Pacific coastlines. The ultimate Central American road epic.',
-    includes: 'Convoy SUV · Support team · Hotels · Ferry',
-    image:    'https://images.unsplash.com/photo-1518057111178-44a106bad636?w=700&auto=format&fit=crop&q=80',
+    title:    'Tokyo → Osaka (Shinkansen)',
+    duration: '2h 25m',
+    desc:     'Japan\'s legendary bullet train — the blueprint for every HSR network in the world. Punctual to the second, immaculate, and unmissable.',
+    includes: 'Ordinary · Green car · Gran Class · JR Pass eligible',
+    image:    'https://images.unsplash.com/photo-1555993539-1732b0258235?w=500&auto=format&fit=crop&q=75',
     accent:   '#f87171',
   },
 ];
@@ -63,7 +63,7 @@ const EXPEDITIONS = [
 const HERO_SERVICES = [
   { Icon: Plane,   label: 'International Flights',     sub: '120+ routes from Lagos & Abuja' },
   { Icon: MapPin,  label: 'West Africa Road Travel',   sub: 'Vetted fleets, real-time tracking' },
-  { Icon: Compass, label: 'Latin America Expeditions', sub: 'Overland adventures, 4x4 ready' },
+  { Icon: Compass, label: 'Rail Transport',             sub: 'Europe & Asia high-speed routes' },
 ];
 
 // ── Animations ────────────────────────────────────────────────────────────────
@@ -149,7 +149,7 @@ export default function ServicesPage() {
 
         {/* Background photo */}
         <div className="absolute inset-0">
-          <img src={IMG_HERO} alt="Airplane wing above clouds" className="w-full h-full object-cover" style={{ objectPosition: 'center 60%' }} />
+          <img src={IMG_HERO} alt="Airplane wing above clouds" className="w-full h-full object-cover" style={{ objectPosition: 'center 60%' }} fetchPriority="high" />
           <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(13,27,56,0.55) 0%, rgba(13,27,56,0.3) 35%, rgba(13,27,56,0.72) 70%, #0d1b38 100%)' }} />
         </div>
 
@@ -217,7 +217,7 @@ export default function ServicesPage() {
           <motion.div {...fadeUp} className="relative">
             <div className="relative rounded-3xl overflow-hidden aspect-[4/3]"
               style={{ boxShadow: '0 24px 80px -16px rgba(13,27,56,0.2)' }}>
-              <img src={IMG_FLIGHTS} alt="Aircraft at dusk" className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" />
+              <img src={IMG_FLIGHTS} alt="Aircraft at dusk" className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" loading="lazy" style={{ willChange: 'transform' }} />
               <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(13,27,56,0.6) 0%, transparent 55%)' }} />
             </div>
 
@@ -337,7 +337,7 @@ export default function ServicesPage() {
             className="relative order-1 lg:order-2">
             <div className="relative rounded-3xl overflow-hidden aspect-[4/3]"
               style={{ boxShadow: '0 24px 80px -16px rgba(0,0,0,0.5)' }}>
-              <img src={IMG_ROAD} alt="Open road through mountains" className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" />
+              <img src={IMG_ROAD} alt="Open road through mountains" className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" loading="lazy" style={{ willChange: 'transform' }} />
               <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(13,27,56,0.5) 0%, transparent 55%)' }} />
 
               {/* Inline label */}
@@ -370,7 +370,7 @@ export default function ServicesPage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════
-          LATIN AMERICA EXPEDITIONS — white
+          RAIL TRANSPORT — white
       ══════════════════════════════════════════════════════════════════════ */}
       <section className="py-28 px-6 bg-white">
         <div className="max-w-7xl mx-auto">
@@ -393,22 +393,22 @@ export default function ServicesPage() {
             <motion.div {...fadeUp} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.12 }} className="relative">
               <div className="relative rounded-3xl overflow-hidden aspect-[4/3]"
                 style={{ boxShadow: '0 24px 80px -16px rgba(13,27,56,0.18)' }}>
-                <img src={IMG_LATAM} alt="Patagonia expedition landscape" className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" />
+                <img src={IMG_RAIL} alt="High-speed rail" className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" loading="lazy" style={{ willChange: 'transform' }} />
                 <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(13,27,56,0.55) 0%, transparent 55%)' }} />
                 <div className="absolute bottom-5 left-5">
                   <div className="flex items-center gap-2 px-4 py-2 rounded-full"
                     style={{ background: 'rgba(13,27,56,0.7)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.12)' }}>
                     <Compass className="w-3.5 h-3.5 text-blue-400" />
-                    <span className="text-white text-xs font-bold" style={{ fontFamily: 'Satoshi, sans-serif' }}>4 signature expeditions</span>
+                    <span className="text-white text-xs font-bold" style={{ fontFamily: 'Satoshi, sans-serif' }}>40+ rail routes</span>
                   </div>
                 </div>
               </div>
             </motion.div>
           </div>
 
-          {/* Expedition cards */}
+          {/* Rail route cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {EXPEDITIONS.map((exp, i) => (
+            {RAIL_ROUTES.map((exp, i) => (
               <motion.div
                 key={exp.title}
                 initial={{ opacity: 0, y: 32 }}
@@ -422,7 +422,8 @@ export default function ServicesPage() {
                 <div className="relative h-44 overflow-hidden">
                   <img src={exp.image} alt={exp.title}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-107"
-                    style={{ objectPosition: 'center 40%' }} />
+                    style={{ objectPosition: 'center 40%', willChange: 'transform' }}
+                    loading="lazy" />
                   <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, transparent 30%, rgba(13,27,56,0.75) 100%)' }} />
 
                   {/* Duration badge */}
@@ -463,7 +464,7 @@ export default function ServicesPage() {
                   <Link to="/enquiries"
                     className="inline-flex items-center gap-1.5 mt-5 text-sm font-bold transition-colors duration-200"
                     style={{ fontFamily: 'Satoshi, sans-serif', color: exp.accent }}>
-                    Enquire about this expedition
+                    Enquire about this route
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>

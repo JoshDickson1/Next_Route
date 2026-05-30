@@ -538,6 +538,7 @@ export function Hero() {
                     alt=""
                     className={'absolute inset-0 w-full h-full object-cover pointer-events-none ' + (i === index ? 'kenburns-layer' : '')}
                     style={{ objectPosition: d.photo.objectPos ?? 'center' }}
+                    loading={i === 0 ? 'eager' : 'lazy'}
                   />
                   {/* Dark overlay for text legibility */}
                   <div className="absolute inset-0 bg-black/65 pointer-events-none"/>
@@ -547,7 +548,7 @@ export function Hero() {
                 <div className="absolute inset-x-0 bottom-0 h-[72%] flex items-end justify-center pointer-events-none">
                   <div
                     className={'w-full max-w-[1700px] ' + (i === index ? 'kenburns-layer' : '')}
-                    style={{ filter: 'drop-shadow(0 24px 60px rgba(0,0,0,0.45))' }}
+                    style={{ filter: 'drop-shadow(0 16px 32px rgba(0,0,0,0.4))' }}
                   >
                     <Silhouette id={d.silhouette} className="w-full h-auto"/>
                   </div>

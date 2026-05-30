@@ -61,6 +61,7 @@ export function Globe({
   const phiOffsetRef = useRef(0)
   const thetaOffsetRef = useRef(0)
   const isPausedRef = useRef(false)
+  const isVisibleRef = useRef(true)
 
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
     pointerInteracting.current = { x: e.clientX, y: e.clientY }
@@ -108,6 +109,17 @@ export function Globe({
   }, [handlePointerMove, handlePointerUp])
 
   useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const observer = new IntersectionObserver(
+      ([entry]) => { isVisibleRef.current = entry.isIntersecting },
+      { threshold: 0 }
+    )
+    observer.observe(canvas)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
     if (!canvasRef.current) return
     const canvas = canvasRef.current
     let globe: ReturnType<typeof createGlobe> | null = null
@@ -142,6 +154,10 @@ export function Globe({
       })
 
       function animate() {
+        if (!isVisibleRef.current) {
+          animationId = requestAnimationFrame(animate)
+          return
+        }
         if (!isPausedRef.current) {
           phi += speed
           if (Math.abs(velocity.current.phi) > 0.0001 || Math.abs(velocity.current.theta) > 0.0001) {

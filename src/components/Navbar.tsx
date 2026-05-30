@@ -43,9 +43,9 @@ export function Navbar() {
   }, []);
 
   const mobileMenuStyle: React.CSSProperties = {
-    background: 'rgba(13, 27, 56, 0.92)',
-    backdropFilter: 'blur(80px) saturate(200%)',
-    WebkitBackdropFilter: 'blur(80px) saturate(200%)',
+    background: 'rgba(13, 27, 56, 0.95)',
+    backdropFilter: 'blur(20px) saturate(160%)',
+    WebkitBackdropFilter: 'blur(20px) saturate(160%)',
     border: '1px solid rgba(255,255,255,0.1)',
     boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
     transition: 'none',
@@ -65,8 +65,9 @@ export function Navbar() {
           transition={{ duration: 0.35, ease: 'easeOut' }}
           className="pointer-events-auto border mt-4 flex items-center justify-between gap-2 px-5 rounded-full w-[calc(100vw-48px)] md:w-auto"
           style={{
-            backdropFilter: 'blur(80px) saturate(200%)',
-            WebkitBackdropFilter: 'blur(80px) saturate(200%)',
+            backdropFilter: 'blur(24px) saturate(160%)',
+            WebkitBackdropFilter: 'blur(24px) saturate(160%)',
+            willChange: 'transform',
           }}
         >
           <Link to="/" className="shrink-0">
@@ -176,7 +177,7 @@ export function Navbar() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
               className="fixed inset-0 z-40"
-              style={{ background: 'rgba(0,0,0,0.2)', backdropFilter: 'blur(4px)' }}
+              style={{ background: 'rgba(0,0,0,0.35)' }}
               onClick={() => setMobileOpen(false)}
             />
             <motion.div

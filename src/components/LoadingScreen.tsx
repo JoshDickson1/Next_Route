@@ -84,7 +84,7 @@ function CloudItem({ def }: { def: typeof CLOUD_DEFS[number] | typeof PEEK_DEFS[
         width:  def.w,
         height: 130,
         opacity: def.op,
-        filter: `blur(${def.blur}px)`,
+        filter: `blur(${Math.ceil(def.blur * 0.55)}px)`,
       }}
       animate={{ x: [0, def.fx, 0], y: [0, -def.fy, 0] }}
       transition={{ duration: def.dur, repeat: Infinity, ease: 'easeInOut', delay: def.dl }}

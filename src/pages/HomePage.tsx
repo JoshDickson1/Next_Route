@@ -25,7 +25,7 @@ const JSON_LD = {
     itemListElement: [
       { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'International Flights' } },
       { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'West African Road Travel' } },
-      { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Latin America Expeditions' } },
+      { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Rail Transport (Europe & Asia)' } },
     ],
   },
 };
@@ -215,7 +215,7 @@ export default function HomePage() {
                 {/* Route pills */}
                 <div className="mt-8">
                   <div className="flex flex-wrap gap-2 mb-7">
-                    {['Lagos → London', 'Lagos → Dubai', 'Abuja → New York', 'Lagos → Toronto'].map((r) => (
+                    {['Lagos → Abuja', 'Lagos → London', 'Lagos → Dubai', 'Abuja → New York'].map((r) => (
                       <span
                         key={r}
                         className="text-[11px] font-semibold px-3 py-1.5 rounded-full text-[#a8cce8]"
@@ -379,11 +379,11 @@ export default function HomePage() {
                     <p
                       className="text-3xl font-black text-white leading-none"
                       style={{ fontFamily: 'Clash Display, sans-serif' }}
-                    >8<span className="text-[#4a90d9]">+</span></p>
+                    >2<span className="text-[#4a90d9]"></span></p>
                     <p
                       className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/25 mt-1"
                       style={{ fontFamily: 'Satoshi, sans-serif' }}
-                    >Countries</p>
+                    >Continents</p>
                   </div>
                   <div className="w-px h-10 bg-white/10" />
                   <Link to="/services">
@@ -458,7 +458,7 @@ export default function HomePage() {
                 region="Italy, Europe"
                 subtitleKey="rome_subtitle"
                 bodyKey="rome_body"
-                image="https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=900&auto=format&fit=crop&q=85"
+                image="https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=700&auto=format&fit=crop&q=80"
               />
             </div>
             <div className="lg:col-span-5 grid grid-rows-2 gap-4">
@@ -468,7 +468,7 @@ export default function HomePage() {
                   region="Tanzania, Africa"
                   subtitleKey="serengeti_subtitle"
                   bodyKey="serengeti_body"
-                  image="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=700&auto=format&fit=crop&q=85"
+                  image="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=600&auto=format&fit=crop&q=80"
                   delay={0.1}
                 />
               </div>
@@ -478,7 +478,7 @@ export default function HomePage() {
                   region="Greece, Europe"
                   subtitleKey="greek_subtitle"
                   bodyKey="greek_body"
-                  image="https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=700&auto=format&fit=crop&q=85"
+                  image="https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=600&auto=format&fit=crop&q=80"
                   delay={0.18}
                 />
               </div>

@@ -310,6 +310,8 @@ function TestimonialCard({ testimonial, index }: { testimonial: Testimonial; ind
                 alt={testimonial.name}
                 className="w-12 h-12 rounded-xl object-cover"
                 style={{ border: '1px solid rgba(168,204,232,0.15)' }}
+                loading="lazy"
+                width={48} height={48}
               />
               <div>
                 <p className="font-black text-white text-[15px]" style={{ fontFamily: 'Clash Display, sans-serif' }}>{testimonial.name}</p>

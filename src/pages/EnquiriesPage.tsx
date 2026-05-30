@@ -331,7 +331,7 @@ export default function EnquiriesPage() {
             {/* WhatsApp CTA */}
             <div className="px-7 py-6" style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
               <motion.a
-                href="https://wa.me/2348012345678"
+                href="https://wa.me/2349122106470"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-between w-full pl-5 pr-2 py-2 rounded-full cursor-pointer"

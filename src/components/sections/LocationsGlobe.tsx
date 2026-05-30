@@ -103,7 +103,13 @@ function CountUp({ to, suffix }: { to: number; suffix: string }) {
   const [val, setVal] = useState(0);
 
   useEffect(() => { mv.set(inView ? to : 0); }, [inView, mv, to]);
-  useEffect(() => spring.on('change', (v) => setVal(Math.round(v))), [spring]);
+  useEffect(() => {
+    let rafId: number;
+    return spring.on('change', (v) => {
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => setVal(Math.round(v)));
+    });
+  }, [spring]);
 
   return <span ref={ref}>{val}{suffix}</span>;
 }
@@ -122,7 +128,7 @@ function GlobeMap() {
         arcColor={[0.66, 0.80, 0.93]}
         glowColor={[0.05, 0.16, 0.45]}
         mapBrightness={4}
-        mapSamples={20000}
+        mapSamples={12000}
         markerSize={0.04}
         markerElevation={0.01}
         arcWidth={1.2}

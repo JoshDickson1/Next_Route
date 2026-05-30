@@ -18,16 +18,20 @@ const OurStoryPage     = lazy(() => import('@/pages/OurStoryPage'))
 const EnquiriesPage    = lazy(() => import('@/pages/EnquiriesPage'))
 const ReviewsPage           = lazy(() => import('@/pages/ReviewsPage'))
 const DestinationDetailPage = lazy(() => import('@/pages/DestinationDetailPage'))
-const TeamPage              = lazy(() => import('@/pages/TeamPage'))
+// const TeamPage              = lazy(() => import('@/pages/TeamPage'))
 const NotFoundPage          = lazy(() => import('@/pages/NotFoundPage'))
 
 function BackToTop() {
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
-    const onScroll = () => setVisible(window.scrollY > 400)
+    let rafId: number;
+    const onScroll = () => {
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => setVisible(window.scrollY > 400));
+    };
     window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+    return () => { window.removeEventListener('scroll', onScroll); cancelAnimationFrame(rafId); }
   }, [])
 
   return (
@@ -64,6 +68,8 @@ function AppInner() {
       <AnimatePresence>{loading && <LoadingScreen onDone={() => setLoading(false)} />}</AnimatePresence>
       <ScrollToTop />
       <div className="flex flex-col min-h-screen">
+        <div className="pointer-events-none fixed top-0 left-0 right-0 z-30 h-10" style={{ background: 'linear-gradient(to bottom, hsl(var(--background)), transparent)' }} />
+        <div className="pointer-events-none fixed bottom-0 left-0 right-0 z-30 h-10" style={{ background: 'linear-gradient(to top, hsl(var(--background)), transparent)' }} />
         <Navbar />
         <main className="flex-1">
           <Suspense fallback={null}>
@@ -75,7 +81,7 @@ function AppInner() {
               <Route path="/enquiries"    element={<EnquiriesPage />} />
               <Route path="/reviews"              element={<ReviewsPage />} />
               <Route path="/destinations/:slug" element={<DestinationDetailPage />} />
-              <Route path="/team"               element={<TeamPage />} />
+              {/* <Route path="/team"               element={<TeamPage />} /> */}
               <Route path="*"            element={<NotFoundPage />} />
             </Routes>
           </Suspense>

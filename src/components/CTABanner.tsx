@@ -91,16 +91,17 @@ export function CTABanner() {
           <div className="absolute top-3 right-3 bg-white h-10 w-10 rounded-[50%]" />
           <motion.div
             className="relative w-[200px] lg:w-[260px]"
+            style={{ willChange: 'transform, opacity' }}
             animate={{
-              y:       [260, 0, 0, -13, 0, -13, 0, -13, 0, -360],
-              opacity: [0,   1, 1,   1, 1,   1, 1,   1, 1,    0],
+              y:       [260, 0, 0, -14, 0, -360],
+              opacity: [0,   1, 1,   1, 1,    0],
             }}
             transition={{
-              duration:    3.4,
-              times:       [0, 0.16, 0.24, 0.34, 0.44, 0.54, 0.64, 0.72, 0.80, 1],
-              ease:        ['easeOut','linear','easeOut','easeIn','easeOut','easeIn','easeOut','easeIn','easeIn'] as const,
+              duration:    3.6,
+              times:       [0, 0.16, 0.42, 0.54, 0.72, 1],
+              ease:        ['easeOut','linear','easeOut','easeIn','easeIn'] as const,
               repeat:      Infinity,
-              repeatDelay: 0.3,
+              repeatDelay: 0.4,
             }}
           >
             {/* ── Trails — BEFORE img so they render behind the plane ── */}
@@ -137,7 +138,7 @@ export function CTABanner() {
               src={planeImg}
               alt="Aircraft"
               className="w-full object-contain relative"
-              style={{ display: 'block', filter: 'drop-shadow(0 16px 28px rgba(13,27,56,0.16)) drop-shadow(0 3px 6px rgba(13,27,56,0.09))' }}
+              style={{ display: 'block', filter: 'drop-shadow(0 12px 20px rgba(13,27,56,0.22))' }}
             />
           </motion.div>
         </div>
