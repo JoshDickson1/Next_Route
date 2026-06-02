@@ -277,8 +277,9 @@ function Navbar() {
 			},
 			className: "pointer-events-auto border mt-4 flex items-center justify-between gap-2 px-5 rounded-full w-[calc(100vw-48px)] md:w-auto",
 			style: {
-				backdropFilter: "blur(80px) saturate(200%)",
-				WebkitBackdropFilter: "blur(80px) saturate(200%)"
+				backdropFilter: "blur(24px) saturate(160%)",
+				WebkitBackdropFilter: "blur(24px) saturate(160%)",
+				willChange: "transform"
 			},
 			children: [
 				/* @__PURE__ */ jsx(Link, {
@@ -384,10 +385,7 @@ function Navbar() {
 		exit: { opacity: 0 },
 		transition: { duration: .15 },
 		className: "fixed inset-0 z-40",
-		style: {
-			background: "rgba(0,0,0,0.2)",
-			backdropFilter: "blur(4px)"
-		},
+		style: { background: "rgba(0,0,0,0.35)" },
 		onClick: () => setMobileOpen(false)
 	}, "backdrop"), /* @__PURE__ */ jsx(motion.div, {
 		initial: {
@@ -411,9 +409,9 @@ function Navbar() {
 		},
 		className: "fixed top-[76px] mt-4 left-4 right-4 z-[60] rounded-2xl p-3",
 		style: {
-			background: "rgba(13, 27, 56, 0.92)",
-			backdropFilter: "blur(80px) saturate(200%)",
-			WebkitBackdropFilter: "blur(80px) saturate(200%)",
+			background: "rgba(13, 27, 56, 0.95)",
+			backdropFilter: "blur(20px) saturate(160%)",
+			WebkitBackdropFilter: "blur(20px) saturate(160%)",
 			border: "1px solid rgba(255,255,255,0.1)",
 			boxShadow: "0 20px 60px rgba(0,0,0,0.4)",
 			transition: "none"
@@ -562,10 +560,6 @@ var NAV_COLS = [
 			{
 				to: "/our-story",
 				labelKey: "nav.our_story"
-			},
-			{
-				to: "/team",
-				labelKey: "nav.team"
 			},
 			{
 				to: "/reviews",
@@ -1051,16 +1045,13 @@ function CTABanner() {
 				className: "lg:w-[45%] bg-gradient-to-br from-blue-950 via-slate-800 to-blue-900 flex items-center justify-center overflow-hidden py-6 lg:py-0 rounded-r-4xl",
 				children: [/* @__PURE__ */ jsx("div", { className: "absolute top-3 right-3 bg-white h-10 w-10 rounded-[50%]" }), /* @__PURE__ */ jsxs(motion.div, {
 					className: "relative w-[200px] lg:w-[260px]",
+					style: { willChange: "transform, opacity" },
 					animate: {
 						y: [
 							260,
 							0,
 							0,
-							-13,
-							0,
-							-13,
-							0,
-							-13,
+							-14,
 							0,
 							-360
 						],
@@ -1070,25 +1061,17 @@ function CTABanner() {
 							1,
 							1,
 							1,
-							1,
-							1,
-							1,
-							1,
 							0
 						]
 					},
 					transition: {
-						duration: 3.4,
+						duration: 3.6,
 						times: [
 							0,
 							.16,
-							.24,
-							.34,
-							.44,
+							.42,
 							.54,
-							.64,
 							.72,
-							.8,
 							1
 						],
 						ease: [
@@ -1096,14 +1079,10 @@ function CTABanner() {
 							"linear",
 							"easeOut",
 							"easeIn",
-							"easeOut",
-							"easeIn",
-							"easeOut",
-							"easeIn",
 							"easeIn"
 						],
 						repeat: Infinity,
-						repeatDelay: .3
+						repeatDelay: .4
 					},
 					children: [[
 						[
@@ -1188,7 +1167,7 @@ function CTABanner() {
 						className: "w-full object-contain relative",
 						style: {
 							display: "block",
-							filter: "drop-shadow(0 16px 28px rgba(13,27,56,0.16)) drop-shadow(0 3px 6px rgba(13,27,56,0.09))"
+							filter: "drop-shadow(0 12px 20px rgba(13,27,56,0.22))"
 						}
 					})]
 				})]
@@ -1229,6 +1208,7 @@ function Globe({ markers = [], arcs = [], className = "", markerColor = [
 	const phiOffsetRef = useRef(0);
 	const thetaOffsetRef = useRef(0);
 	const isPausedRef = useRef(false);
+	const isVisibleRef = useRef(true);
 	const handlePointerDown = useCallback((e) => {
 		pointerInteracting.current = {
 			x: e.clientX,
@@ -1284,6 +1264,15 @@ function Globe({ markers = [], arcs = [], className = "", markerColor = [
 		};
 	}, [handlePointerMove, handlePointerUp]);
 	useEffect(() => {
+		const canvas = canvasRef.current;
+		if (!canvas) return;
+		const observer = new IntersectionObserver(([entry]) => {
+			isVisibleRef.current = entry.isIntersecting;
+		}, { threshold: 0 });
+		observer.observe(canvas);
+		return () => observer.disconnect();
+	}, []);
+	useEffect(() => {
 		if (!canvasRef.current) return;
 		const canvas = canvasRef.current;
 		let globe = null;
@@ -1322,6 +1311,10 @@ function Globe({ markers = [], arcs = [], className = "", markerColor = [
 				opacity: .7
 			});
 			function animate() {
+				if (!isVisibleRef.current) {
+					animationId = requestAnimationFrame(animate);
+					return;
+				}
 				if (!isPausedRef.current) {
 					phi += speed;
 					if (Math.abs(velocity.current.phi) > 1e-4 || Math.abs(velocity.current.theta) > 1e-4) {
@@ -1683,7 +1676,13 @@ function CountUp({ to, suffix }) {
 		mv,
 		to
 	]);
-	useEffect(() => spring.on("change", (v) => setVal(Math.round(v))), [spring]);
+	useEffect(() => {
+		let rafId;
+		return spring.on("change", (v) => {
+			cancelAnimationFrame(rafId);
+			rafId = requestAnimationFrame(() => setVal(Math.round(v)));
+		});
+	}, [spring]);
 	return /* @__PURE__ */ jsxs("span", {
 		ref,
 		children: [val, suffix]
@@ -1717,7 +1716,7 @@ function GlobeMap() {
 				.45
 			],
 			mapBrightness: 4,
-			mapSamples: 2e4,
+			mapSamples: 12e3,
 			markerSize: .04,
 			markerElevation: .01,
 			arcWidth: 1.2,
@@ -3199,13 +3198,14 @@ function Hero() {
 							src: d.photo.src,
 							alt: "",
 							className: "absolute inset-0 w-full h-full object-cover pointer-events-none " + (i === index ? "kenburns-layer" : ""),
-							style: { objectPosition: d.photo.objectPos ?? "center" }
+							style: { objectPosition: d.photo.objectPos ?? "center" },
+							loading: i === 0 ? "eager" : "lazy"
 						}), /* @__PURE__ */ jsx("div", { className: "absolute inset-0 bg-black/65 pointer-events-none" })] }),
 						!d.photo && /* @__PURE__ */ jsx("div", {
 							className: "absolute inset-x-0 bottom-0 h-[72%] flex items-end justify-center pointer-events-none",
 							children: /* @__PURE__ */ jsx("div", {
 								className: "w-full max-w-[1700px] " + (i === index ? "kenburns-layer" : ""),
-								style: { filter: "drop-shadow(0 24px 60px rgba(0,0,0,0.45))" },
+								style: { filter: "drop-shadow(0 16px 32px rgba(0,0,0,0.4))" },
 								children: /* @__PURE__ */ jsx(Silhouette, {
 									id: d.silhouette,
 									className: "w-full h-auto"
@@ -3518,7 +3518,7 @@ var JSON_LD = {
 				"@type": "Offer",
 				itemOffered: {
 					"@type": "Service",
-					name: "Latin America Expeditions"
+					name: "Rail Transport (Europe & Asia)"
 				}
 			}
 		]
@@ -3765,10 +3765,10 @@ function HomePage() {
 										children: [/* @__PURE__ */ jsx("div", {
 											className: "flex flex-wrap gap-2 mb-7",
 											children: [
+												"Lagos → Abuja",
 												"Lagos → London",
 												"Lagos → Dubai",
-												"Abuja → New York",
-												"Lagos → Toronto"
+												"Abuja → New York"
 											].map((r) => /* @__PURE__ */ jsx("span", {
 												className: "text-[11px] font-semibold px-3 py-1.5 rounded-full text-[#a8cce8]",
 												style: {
@@ -3980,14 +3980,11 @@ function HomePage() {
 												/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsxs("p", {
 													className: "text-3xl font-black text-white leading-none",
 													style: { fontFamily: "Clash Display, sans-serif" },
-													children: ["8", /* @__PURE__ */ jsx("span", {
-														className: "text-[#4a90d9]",
-														children: "+"
-													})]
+													children: ["2", /* @__PURE__ */ jsx("span", { className: "text-[#4a90d9]" })]
 												}), /* @__PURE__ */ jsx("p", {
 													className: "text-[10px] font-bold uppercase tracking-[0.2em] text-white/25 mt-1",
 													style: { fontFamily: "Satoshi, sans-serif" },
-													children: "Countries"
+													children: "Continents"
 												})] }),
 												/* @__PURE__ */ jsx("div", { className: "w-px h-10 bg-white/10" }),
 												/* @__PURE__ */ jsx(Link, {
@@ -4068,7 +4065,7 @@ function HomePage() {
 								region: "Italy, Europe",
 								subtitleKey: "rome_subtitle",
 								bodyKey: "rome_body",
-								image: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=900&auto=format&fit=crop&q=85"
+								image: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=700&auto=format&fit=crop&q=80"
 							})
 						}), /* @__PURE__ */ jsxs("div", {
 							className: "lg:col-span-5 grid grid-rows-2 gap-4",
@@ -4079,7 +4076,7 @@ function HomePage() {
 									region: "Tanzania, Africa",
 									subtitleKey: "serengeti_subtitle",
 									bodyKey: "serengeti_body",
-									image: "https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=700&auto=format&fit=crop&q=85",
+									image: "https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=600&auto=format&fit=crop&q=80",
 									delay: .1
 								})
 							}), /* @__PURE__ */ jsx("div", {
@@ -4089,7 +4086,7 @@ function HomePage() {
 									region: "Greece, Europe",
 									subtitleKey: "greek_subtitle",
 									bodyKey: "greek_body",
-									image: "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=700&auto=format&fit=crop&q=85",
+									image: "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=600&auto=format&fit=crop&q=80",
 									delay: .18
 								})
 							})]
@@ -4599,16 +4596,17 @@ function HomePage() {
 }
 //#endregion
 //#region src/pages/ServicesPage.tsx
-var IMG_HERO = "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1800&auto=format&fit=crop&q=90";
-var IMG_FLIGHTS = "https://images.unsplash.com/photo-1569629743817-70d8db6c323b?w=1200&auto=format&fit=crop&q=85";
-var IMG_ROAD = "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1200&auto=format&fit=crop&q=85";
-var IMG_LATAM = "https://images.unsplash.com/photo-1482938289607-e9573fc25ebb?w=1200&auto=format&fit=crop&q=85";
+var IMG_HERO = "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1400&auto=format&fit=crop&q=80";
+var IMG_FLIGHTS = "https://images.unsplash.com/photo-1569629743817-70d8db6c323b?w=900&auto=format&fit=crop&q=80";
+var IMG_ROAD = "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=900&auto=format&fit=crop&q=80";
+var IMG_RAIL = "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=900&auto=format&fit=crop&q=80";
 var FLIGHT_ROUTES = [
+	"Lagos → Abuja",
+	"Lagos → Port Harcourt",
 	"Lagos → London",
 	"Lagos → Dubai",
 	"Abuja → New York",
-	"Lagos → Toronto",
-	"Abuja → Atlanta"
+	"Lagos → Toronto"
 ];
 var ROAD_ROUTES = [
 	"Lagos → Abuja",
@@ -4639,37 +4637,37 @@ var ROAD_FEATURES = [
 		body: "Consistently top-rated by our travellers."
 	}
 ];
-var EXPEDITIONS = [
+var RAIL_ROUTES = [
 	{
-		title: "Colombia → Ecuador Overland",
-		duration: "14 days",
-		desc: "Cross the Andes from Medellín to Quito, passing cloud forests, volcano corridors, and colonial towns.",
-		includes: "SUV · Guide · Accommodation · Meals",
-		image: "https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=700&auto=format&fit=crop&q=80",
-		accent: "#34d399"
-	},
-	{
-		title: "Patagonia SUV Circuit",
-		duration: "10 days",
-		desc: "Drive the legendary Ruta 40, camp under the stars, and trek Torres del Paine.",
-		includes: "SUV · Guide · Camping gear · Permits",
-		image: "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=700&auto=format&fit=crop&q=80",
+		title: "London → Paris (Eurostar)",
+		duration: "2h 15m",
+		desc: "The iconic Channel Tunnel route connecting two of Europe's greatest capitals under the sea — faster than flying once you factor in airports.",
+		includes: "Standard · Business Premier · Wi-Fi · City-centre arrival",
+		image: "https://images.unsplash.com/photo-1474487548417-781cb6d646b3?w=500&auto=format&fit=crop&q=75",
 		accent: "#60a5fa"
 	},
 	{
-		title: "Peru Sacred Valley & Amazon",
-		duration: "12 days",
-		desc: "Machu Picchu by road, then descend into the Amazon for a once-in-a-lifetime contrast.",
-		includes: "4x4 · Bilingual guide · Cusco flights",
-		image: "https://images.unsplash.com/photo-1526392060635-9d6019884377?w=700&auto=format&fit=crop&q=80",
+		title: "Paris → Amsterdam (Thalys)",
+		duration: "3h 20m",
+		desc: "Glide through Belgium and into the Netherlands on one of Europe's most scenic high-speed corridors — with city-centre to city-centre convenience.",
+		includes: "Comfort 1 & 2 · Onboard dining · No airport queues",
+		image: "https://images.unsplash.com/photo-1559825481-12a05cc00344?w=500&auto=format&fit=crop&q=75",
+		accent: "#34d399"
+	},
+	{
+		title: "Beijing → Shanghai (CR400AF)",
+		duration: "4h 30m",
+		desc: "China's crown jewel of high-speed rail — the world's busiest HSR corridor, running at 350 km/h across 1,318 km of precision-engineered track.",
+		includes: "2nd class · 1st class · Business · Dining car",
+		image: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=500&auto=format&fit=crop&q=75",
 		accent: "#fbbf24"
 	},
 	{
-		title: "Mexico City → Panama",
-		duration: "21 days",
-		desc: "Six countries, ancient ruins, and Pacific coastlines. The ultimate Central American road epic.",
-		includes: "Convoy SUV · Support team · Hotels · Ferry",
-		image: "https://images.unsplash.com/photo-1518057111178-44a106bad636?w=700&auto=format&fit=crop&q=80",
+		title: "Tokyo → Osaka (Shinkansen)",
+		duration: "2h 25m",
+		desc: "Japan's legendary bullet train — the blueprint for every HSR network in the world. Punctual to the second, immaculate, and unmissable.",
+		includes: "Ordinary · Green car · Gran Class · JR Pass eligible",
+		image: "https://images.unsplash.com/photo-1555993539-1732b0258235?w=500&auto=format&fit=crop&q=75",
 		accent: "#f87171"
 	}
 ];
@@ -4686,8 +4684,8 @@ var HERO_SERVICES = [
 	},
 	{
 		Icon: Compass,
-		label: "Latin America Expeditions",
-		sub: "Overland adventures, 4x4 ready"
+		label: "Rail Transport",
+		sub: "Europe & Asia high-speed routes"
 	}
 ];
 var fadeUp$2 = {
@@ -4794,7 +4792,8 @@ function ServicesPage() {
 						src: IMG_HERO,
 						alt: "Airplane wing above clouds",
 						className: "w-full h-full object-cover",
-						style: { objectPosition: "center 60%" }
+						style: { objectPosition: "center 60%" },
+						fetchPriority: "high"
 					}), /* @__PURE__ */ jsx("div", {
 						className: "absolute inset-0",
 						style: { background: "linear-gradient(to bottom, rgba(13,27,56,0.55) 0%, rgba(13,27,56,0.3) 35%, rgba(13,27,56,0.72) 70%, #0d1b38 100%)" }
@@ -4908,7 +4907,9 @@ function ServicesPage() {
 								children: [/* @__PURE__ */ jsx("img", {
 									src: IMG_FLIGHTS,
 									alt: "Aircraft at dusk",
-									className: "w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+									className: "w-full h-full object-cover transition-transform duration-700 hover:scale-105",
+									loading: "lazy",
+									style: { willChange: "transform" }
 								}), /* @__PURE__ */ jsx("div", {
 									className: "absolute inset-0",
 									style: { background: "linear-gradient(to top, rgba(13,27,56,0.6) 0%, transparent 55%)" }
@@ -5138,7 +5139,9 @@ function ServicesPage() {
 								/* @__PURE__ */ jsx("img", {
 									src: IMG_ROAD,
 									alt: "Open road through mountains",
-									className: "w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+									className: "w-full h-full object-cover transition-transform duration-700 hover:scale-105",
+									loading: "lazy",
+									style: { willChange: "transform" }
 								}),
 								/* @__PURE__ */ jsx("div", {
 									className: "absolute inset-0",
@@ -5253,9 +5256,11 @@ function ServicesPage() {
 								style: { boxShadow: "0 24px 80px -16px rgba(13,27,56,0.18)" },
 								children: [
 									/* @__PURE__ */ jsx("img", {
-										src: IMG_LATAM,
-										alt: "Patagonia expedition landscape",
-										className: "w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+										src: IMG_RAIL,
+										alt: "High-speed rail",
+										className: "w-full h-full object-cover transition-transform duration-700 hover:scale-105",
+										loading: "lazy",
+										style: { willChange: "transform" }
 									}),
 									/* @__PURE__ */ jsx("div", {
 										className: "absolute inset-0",
@@ -5273,7 +5278,7 @@ function ServicesPage() {
 											children: [/* @__PURE__ */ jsx(Compass, { className: "w-3.5 h-3.5 text-blue-400" }), /* @__PURE__ */ jsx("span", {
 												className: "text-white text-xs font-bold",
 												style: { fontFamily: "Satoshi, sans-serif" },
-												children: "4 signature expeditions"
+												children: "40+ rail routes"
 											})]
 										})
 									})
@@ -5282,7 +5287,7 @@ function ServicesPage() {
 						})]
 					}), /* @__PURE__ */ jsx("div", {
 						className: "grid grid-cols-1 md:grid-cols-2 gap-5",
-						children: EXPEDITIONS.map((exp, i) => /* @__PURE__ */ jsxs(motion.div, {
+						children: RAIL_ROUTES.map((exp, i) => /* @__PURE__ */ jsxs(motion.div, {
 							initial: {
 								opacity: 0,
 								y: 32
@@ -5317,7 +5322,11 @@ function ServicesPage() {
 										src: exp.image,
 										alt: exp.title,
 										className: "w-full h-full object-cover transition-transform duration-700 group-hover:scale-107",
-										style: { objectPosition: "center 40%" }
+										style: {
+											objectPosition: "center 40%",
+											willChange: "transform"
+										},
+										loading: "lazy"
 									}),
 									/* @__PURE__ */ jsx("div", {
 										className: "absolute inset-0",
@@ -5375,7 +5384,7 @@ function ServicesPage() {
 											fontFamily: "Satoshi, sans-serif",
 											color: exp.accent
 										},
-										children: ["Enquire about this expedition", /* @__PURE__ */ jsx(ArrowRight, { className: "w-3.5 h-3.5" })]
+										children: ["Enquire about this route", /* @__PURE__ */ jsx(ArrowRight, { className: "w-3.5 h-3.5" })]
 									})
 								]
 							})]
@@ -5514,7 +5523,7 @@ var DESTINATIONS = [
 		],
 		flag: "🇮🇹",
 		stats: "340+ Hotels · 18 Packages",
-		imageUrl: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=1400&auto=format&fit=crop&q=85",
+		imageUrl: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&auto=format&fit=crop&q=80",
 		themeColor: "0 60% 30%",
 		lat: 41.9028,
 		lng: 12.4964
@@ -5531,7 +5540,7 @@ var DESTINATIONS = [
 		],
 		flag: "🇹🇿",
 		stats: "85 Lodges · 12 Safaris",
-		imageUrl: "https://images.unsplash.com/photo-1516426122078-c23e76319801?w=1400&auto=format&fit=crop&q=85",
+		imageUrl: "https://images.unsplash.com/photo-1516426122078-c23e76319801?w=800&auto=format&fit=crop&q=80",
 		themeColor: "35 70% 30%",
 		lat: -4.9,
 		lng: 34.8
@@ -5548,7 +5557,7 @@ var DESTINATIONS = [
 		],
 		flag: "🇬🇷",
 		stats: "210+ Villas · 24 Packages",
-		imageUrl: "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=1400&auto=format&fit=crop&q=85",
+		imageUrl: "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=800&auto=format&fit=crop&q=80",
 		themeColor: "200 70% 28%",
 		lat: 37,
 		lng: 25
@@ -5565,7 +5574,7 @@ var DESTINATIONS = [
 		],
 		flag: "🇦🇪",
 		stats: "520+ Hotels · 32 Packages",
-		imageUrl: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=1400&auto=format&fit=crop&q=85",
+		imageUrl: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&auto=format&fit=crop&q=80",
 		themeColor: "38 55% 28%",
 		lat: 25.2048,
 		lng: 55.2708
@@ -5582,7 +5591,7 @@ var DESTINATIONS = [
 		],
 		flag: "🇬🇧",
 		stats: "890+ Hotels · 28 Packages",
-		imageUrl: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=1400&auto=format&fit=crop&q=85",
+		imageUrl: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800&auto=format&fit=crop&q=80",
 		themeColor: "215 55% 20%",
 		lat: 51.5074,
 		lng: -.1276
@@ -5599,7 +5608,7 @@ var DESTINATIONS = [
 		],
 		flag: "🇺🇸",
 		stats: "740+ Hotels · 22 Packages",
-		imageUrl: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=1400&auto=format&fit=crop&q=85",
+		imageUrl: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=800&auto=format&fit=crop&q=80",
 		themeColor: "240 50% 22%",
 		lat: 40.7128,
 		lng: -74.006
@@ -5616,7 +5625,7 @@ var DESTINATIONS = [
 		],
 		flag: "🇨🇴",
 		stats: "120+ Hotels · 15 Packages",
-		imageUrl: "https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=1400&auto=format&fit=crop&q=85",
+		imageUrl: "https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=800&auto=format&fit=crop&q=80",
 		themeColor: "270 60% 28%",
 		lat: 10.391,
 		lng: -75.4794
@@ -5633,7 +5642,7 @@ var DESTINATIONS = [
 		],
 		flag: "🇦🇷",
 		stats: "180+ Hotels · 16 Packages",
-		imageUrl: "https://images.unsplash.com/photo-1589909202802-8f4aadce1849?w=1400&auto=format&fit=crop&q=85",
+		imageUrl: "https://images.unsplash.com/photo-1589909202802-8f4aadce1849?w=800&auto=format&fit=crop&q=80",
 		themeColor: "168 60% 22%",
 		lat: -34.6037,
 		lng: -58.3816
@@ -7962,7 +7971,7 @@ function EnquiriesPage() {
 							className: "px-7 py-6",
 							style: { borderTop: "1px solid rgba(255,255,255,0.07)" },
 							children: [/* @__PURE__ */ jsxs(motion.a, {
-								href: "https://wa.me/2348012345678",
+								href: "https://wa.me/2349122106470",
 								target: "_blank",
 								rel: "noopener noreferrer",
 								className: "flex items-center justify-between w-full pl-5 pr-2 py-2 rounded-full cursor-pointer",
@@ -8112,17 +8121,17 @@ var common_default = {
 		"road_label": "Road Travel",
 		"road_note": "West Africa routes",
 		"expedition_label": "Expeditions",
-		"expedition_note": "Latin America & beyond"
+		"expedition_note": "Europe & Asia rail routes"
 	},
 	home_services: {
 		"eyebrow": "What We Do",
 		"heading": "Every Route, Handled.",
 		"flights_title": "Flights",
-		"flights_body": "Connecting Nigeria to major international hubs. Whether you are traveling for business, study, or leisure, we bridge the gap between Nigeria and the rest of the world with reliable flight options and seamless booking coordination.",
+		"flights_body": "Connecting Nigeria — locally and globally. From domestic routes between Lagos, Abuja, Port Harcourt, and Kano, to major international hubs in London, Dubai, and New York. We handle every flight, wherever it takes you.",
 		"road_title": "Road Travel",
 		"road_body": "Inter-state express services and private charters across West Africa. Experience safe, comfortable, and reliable regional transit. From interstate commuting within Nigeria to private cross-border charters, we keep you moving smoothly.",
-		"latam_title": "Latin America Expeditions",
-		"latam_body": "Specialized SUV and road travel connecting North & South America. Discover tailored, rugged, and breathtaking overland journeys across spectacular Latin American landscapes with experienced guides and specialized vehicles.",
+		"latam_title": "Rail Transport",
+		"latam_body": "High-speed rail across Europe and Asia — from the Eurostar through the Channel Tunnel to Japan's legendary Shinkansen. We coordinate routes, seats, and rail passes so you travel in comfort at ground level.",
 		"learn_more": "Learn more"
 	},
 	home_destinations: {
@@ -8151,7 +8160,7 @@ var common_default = {
 		"regional_title": "Regional Connectivity",
 		"regional_body": "We champion West African unity by detailing safe, structured road travel paths, offering a trusted resource for regional commerce, family visits, and tourism.",
 		"adventure_title": "Curated Adventure Planning",
-		"adventure_body": "For those looking to step far outside their comfort zone — like exploring Latin America by road — we provide the specialized knowledge, vehicle insights, and structural blueprints needed.",
+		"adventure_body": "For those looking to step far outside their comfort zone — like riding the Shinkansen across Japan or the Eurostar through Europe — we provide the specialist knowledge, rail pass guidance, and route blueprints needed.",
 		"cultural_title": "Local Cultural Insights",
 		"cultural_body": "We believe in respectful, informed travel. Our destination guides ensure that before you even pack your bags, you understand the local culture, accommodation landscapes, and hidden gems."
 	},
@@ -8180,10 +8189,10 @@ var common_default = {
 		"road_feature2": "Vetted, professional drivers",
 		"road_feature3": "Schedule coordination & tracking",
 		"road_feature4": "Door-to-door routing available",
-		"latam_eyebrow": "Latin America Expeditions",
-		"latam_heading": "Overland Adventures Across the Americas",
-		"latam_body1": "Latin America is one of the world's most spectacular road destinations — and we've built specialized expedition packages to match. Our SUV overland journeys traverse diverse terrains, crossing borders and cultures with expert support every mile.",
-		"latam_body2": "Each expedition is fully structured: pre-trip briefings, vetted local guides, accommodation arrangements, and safety protocols — so you focus entirely on the experience.",
+		"latam_eyebrow": "European & Asian Rail",
+		"latam_heading": "Rail Travel Across Europe & Asia",
+		"latam_body1": "High-speed rail is the smarter way to move between Europe's great cities — no airport queues, city-centre arrivals, and scenery you simply can't see from 35,000 feet. We handle Eurostar connections, Thalys cross-border routes, and Eurail pass planning so your European leg feels effortless.",
+		"latam_body2": "Further east, China's CR400AF bullet trains and Japan's iconic Shinkansen offer some of the world's fastest and most reliable rail journeys. We coordinate tickets, seat classes, and multi-city itineraries across both networks — whether it's Beijing to Shanghai or Tokyo to Osaka.",
 		"duration": "Duration",
 		"includes": "Includes",
 		"enquire_trip": "Enquire About This Trip"
@@ -8257,12 +8266,12 @@ var common_default = {
 		"form_email": "Email Address",
 		"form_email_placeholder": "your@email.com",
 		"form_phone": "Phone Number",
-		"form_phone_placeholder": "+234 800 000 0000",
+		"form_phone_placeholder": "+234 912 210 6470",
 		"form_service": "Service Type",
 		"form_service_placeholder": "Select a service",
 		"form_service_flight": "International Flight",
 		"form_service_road": "Road Travel",
-		"form_service_latam": "Latin America Expedition",
+		"form_service_latam": "Rail Transport",
 		"form_service_other": "Other / General Enquiry",
 		"form_destination": "Destination",
 		"form_destination_placeholder": "Where do you want to go?",
@@ -8278,9 +8287,9 @@ var common_default = {
 		"form_success_new": "Submit Another Enquiry",
 		"contact_heading": "Other Ways to Reach Us",
 		"contact_email_label": "Email",
-		"contact_email": "hello@nextroutetravels.com",
+		"contact_email": "info@nextroutetravels.com",
 		"contact_phone_label": "Phone",
-		"contact_phone": "+234 800 NEXT ROUTE",
+		"contact_phone": "+234 912 210 6470 · +234 813 787 2422",
 		"contact_location_label": "Location",
 		"contact_location": "Lagos, Nigeria",
 		"contact_hours_label": "Hours",

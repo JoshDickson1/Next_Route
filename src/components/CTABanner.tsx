@@ -106,8 +106,6 @@ export function CTABanner() {
           >
             {/* ── Trails — BEFORE img so they render behind the plane ── */}
             {([
-              // [leftPct, widthPx, heightPx, opacity, blurPx, rotateDeg]
-              // left engine cluster (~30% from left)
               ['27%', 2, 115, 0.32, 0.5,  4],
               ['30%', 3, 140, 0.38, 0,    0],
               ['33%', 2, 115, 0.32, 0.5, -4],
