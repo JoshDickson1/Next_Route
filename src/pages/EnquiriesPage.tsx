@@ -16,6 +16,8 @@ const fadeUp = {
   transition:  { duration: 0.65, ease: [0.22, 1, 0.36, 1] as const },
 };
 
+const FORMSPREE_ENQUIRIES_ID = 'xqeopabw';
+
 const schema = z.object({
   fullName:      z.string().min(1, 'Full name is required'),
   email:         z.string().email('Enter a valid email address'),
@@ -101,11 +103,29 @@ function SuccessState({ onReset, t }: { onReset: () => void; t: (k: string) => s
 
 function EnquiryForm() {
   const { t } = useTranslation();
-  const [submitted, setSubmitted] = useState(false);
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({ resolver: zodResolver(schema) });
-  const onSubmit: SubmitHandler<FormData> = () => setSubmitted(true);
+  const [submitted, setSubmitted]   = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<FormData>({ resolver: zodResolver(schema) });
 
-  if (submitted) return <SuccessState onReset={() => setSubmitted(false)} t={t} />;
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    setSubmitError('');
+    try {
+      const res = await fetch(`https://formspree.io/f/${FORMSPREE_ENQUIRIES_ID}`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body:    JSON.stringify(data),
+      });
+      if (res.ok) {
+        setSubmitted(true);
+      } else {
+        setSubmitError('Something went wrong. Please try again or contact us directly.');
+      }
+    } catch {
+      setSubmitError('Network error. Please check your connection and try again.');
+    }
+  };
+
+  if (submitted) return <SuccessState onReset={() => { setSubmitted(false); reset(); }} t={t} />;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
@@ -177,21 +197,37 @@ function EnquiryForm() {
       </FieldWrap>
 
       {/* Submit */}
-      <motion.button
-        type="submit"
-        className="w-full flex items-center justify-between pl-7 pr-2.5 py-2.5 rounded-full cursor-pointer"
-        style={{ background: 'linear-gradient(135deg, #1a3566 0%, #0d1b38 100%)', boxShadow: '0 8px 32px -8px rgba(13,27,56,0.45)' }}
-        whileHover={{ scale: 1.015 }}
-        whileTap={{ scale: 0.985 }}
-        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-      >
-        <span className="text-sm font-bold text-white" style={{ fontFamily: 'Satoshi, sans-serif' }}>
-          {t('enquiries_page.form_submit')}
-        </span>
-        <span className="w-11 h-11 rounded-full bg-white/15 flex items-center justify-center shrink-0">
-          <ArrowRight className="w-4 h-4 text-white" />
-        </span>
-      </motion.button>
+      <div className="space-y-3">
+        <motion.button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full flex items-center justify-between pl-7 pr-2.5 py-2.5 rounded-full cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+          style={{ background: 'linear-gradient(135deg, #1a3566 0%, #0d1b38 100%)', boxShadow: '0 8px 32px -8px rgba(13,27,56,0.45)' }}
+          whileHover={isSubmitting ? {} : { scale: 1.015 }}
+          whileTap={isSubmitting ? {} : { scale: 0.985 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+        >
+          <span className="text-sm font-bold text-white" style={{ fontFamily: 'Satoshi, sans-serif' }}>
+            {isSubmitting ? 'Sending…' : t('enquiries_page.form_submit')}
+          </span>
+          <span className="w-11 h-11 rounded-full bg-white/15 flex items-center justify-center shrink-0">
+            <ArrowRight className="w-4 h-4 text-white" />
+          </span>
+        </motion.button>
+
+        <AnimatePresence>
+          {submitError && (
+            <motion.p
+              initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.25 }}
+              className="text-center text-sm font-semibold text-red-500"
+              style={{ fontFamily: 'Satoshi, sans-serif' }}
+            >
+              {submitError}
+            </motion.p>
+          )}
+        </AnimatePresence>
+      </div>
     </form>
   );
 }

@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useRef, useEffect, useState } from 'react';
 import { Send } from 'lucide-react';
 import { InstagramIcon, XIcon, FacebookIcon } from '@/components/SocialIcons';
-import { motion, useInView } from 'framer-motion';
+import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { useTranslation } from 'react-i18next';
 
@@ -47,6 +47,9 @@ const SOCIAL = [
   { href: 'https://twitter.com',   label: 'X (Twitter)', Icon: XIcon },
   { href: 'https://facebook.com',  label: 'Facebook',    Icon: FacebookIcon },
 ];
+
+const FORMSPREE_NEWSLETTER_ID = 'maqzenjl';
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const CHAR_WIDTH_RATIO = 6.1;
 
@@ -96,8 +99,10 @@ function NextRouteWordmark() {
 export function Footer() {
   const { t } = useTranslation();
   const year = new Date().getFullYear();
-  const [email, setEmail] = useState('');
-  const [sent, setSent]   = useState(false);
+  const [email, setEmail]       = useState('');
+  const [sent, setSent]         = useState(false);
+  const [sending, setSending]   = useState(false);
+  const [sendError, setSendError] = useState('');
 
   const cardRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(cardRef, { once: false, margin: '-60px' });
@@ -108,8 +113,28 @@ export function Footer() {
     transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] as const, delay },
   });
 
-  const handleSend = () => {
-    if (email) { setSent(true); setEmail(''); }
+  const handleSend = async () => {
+    const trimmed = email.trim();
+    if (!trimmed || !EMAIL_RE.test(trimmed)) return;
+    setSending(true);
+    setSendError('');
+    try {
+      const res = await fetch(`https://formspree.io/f/${FORMSPREE_NEWSLETTER_ID}`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body:    JSON.stringify({ email: trimmed }),
+      });
+      if (res.ok) {
+        setSent(true);
+        setEmail('');
+      } else {
+        setSendError('Could not subscribe. Please try again.');
+      }
+    } catch {
+      setSendError('Network error. Please try again.');
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -207,47 +232,64 @@ export function Footer() {
             <span style={{ color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>BiTech.</span>
           </p>
 
-          <div
-            className="relative flex items-center w-full sm:w-[280px] rounded-full overflow-hidden"
-            style={{
-              background: 'rgba(255,255,255,0.06)',
-              border: '1px solid rgba(255,255,255,0.12)',
-              height: 52,
-            }}
-          >
-            <Input
-              type="email"
-              placeholder={t('footer.newsletter_placeholder')}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              className="h-full flex-1 border-0 bg-transparent text-sm focus-visible:ring-0 focus-visible:ring-offset-0 pl-5 pr-14 text-white/75 placeholder:text-white/25"
-              style={{ fontFamily: 'Satoshi, sans-serif' }}
-            />
-            <motion.button
-              type="button"
-              onClick={handleSend}
-              whileHover="hover"
-              className="absolute right-1.5 flex items-center justify-center rounded-full shrink-0 cursor-pointer overflow-hidden bg-white"
-              style={{ width: 38, height: 38 }}
-              aria-label="Subscribe"
+          <div className="flex flex-col items-end gap-1.5 w-full sm:w-[280px]">
+            <div
+              className="relative flex items-center w-full rounded-full overflow-hidden"
+              style={{
+                background: 'rgba(255,255,255,0.06)',
+                border: '1px solid rgba(255,255,255,0.12)',
+                height: 52,
+              }}
             >
-              <motion.span
-                variants={{ hover: { x: 14, y: -14, opacity: 0, transition: { duration: 0.18, ease: 'easeIn' } } }}
-                animate={{ x: [0, 1.5, 0], y: [0, -1.5, 0] }}
-                transition={{ duration: 1.4, repeat: Infinity, repeatDelay: 2.5, ease: 'easeInOut' }}
-                className="absolute flex items-center justify-center"
+              <Input
+                type="email"
+                placeholder={t('footer.newsletter_placeholder')}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                disabled={sending || sent}
+                className="h-full flex-1 border-0 bg-transparent text-sm focus-visible:ring-0 focus-visible:ring-offset-0 pl-5 pr-14 text-white/75 placeholder:text-white/25 disabled:opacity-50"
+                style={{ fontFamily: 'Satoshi, sans-serif' }}
+              />
+              <motion.button
+                type="button"
+                onClick={handleSend}
+                disabled={sending || sent}
+                whileHover={sending || sent ? 'idle' : 'hover'}
+                className="absolute right-1.5 flex items-center justify-center rounded-full shrink-0 cursor-pointer overflow-hidden bg-white disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ width: 38, height: 38 }}
+                aria-label="Subscribe"
               >
-                <Send size={15} strokeWidth={2} className="text-[#0d1b38]" />
-              </motion.span>
-              <motion.span
-                variants={{ hover: { x: ['-100%', '0%'], y: ['100%', '0%'], opacity: [0, 1], transition: { duration: 0.22, ease: 'easeOut', delay: 0.18 } } }}
-                initial={{ x: '-100%', y: '100%', opacity: 0 }}
-                className="absolute flex items-center justify-center"
-              >
-                <Send size={15} strokeWidth={2} className="text-[#0d1b38]" />
-              </motion.span>
-            </motion.button>
+                <motion.span
+                  variants={{ hover: { x: 14, y: -14, opacity: 0, transition: { duration: 0.18, ease: 'easeIn' } } }}
+                  animate={{ x: [0, 1.5, 0], y: [0, -1.5, 0] }}
+                  transition={{ duration: 1.4, repeat: Infinity, repeatDelay: 2.5, ease: 'easeInOut' }}
+                  className="absolute flex items-center justify-center"
+                >
+                  <Send size={15} strokeWidth={2} className="text-[#0d1b38]" />
+                </motion.span>
+                <motion.span
+                  variants={{ hover: { x: ['-100%', '0%'], y: ['100%', '0%'], opacity: [0, 1], transition: { duration: 0.22, ease: 'easeOut', delay: 0.18 } } }}
+                  initial={{ x: '-100%', y: '100%', opacity: 0 }}
+                  className="absolute flex items-center justify-center"
+                >
+                  <Send size={15} strokeWidth={2} className="text-[#0d1b38]" />
+                </motion.span>
+              </motion.button>
+            </div>
+
+            <AnimatePresence>
+              {sendError && (
+                <motion.p
+                  initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
+                  transition={{ duration: 0.2 }}
+                  className="text-[11px] font-semibold text-red-400 pr-1"
+                  style={{ fontFamily: 'Satoshi, sans-serif' }}
+                >
+                  {sendError}
+                </motion.p>
+              )}
+            </AnimatePresence>
           </div>
         </motion.div>
 

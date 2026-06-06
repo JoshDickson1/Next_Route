@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { PlaneTakeoff } from 'lucide-react';
 
 // ── Destination data ──────────────────────────────────────────────────────────
 
@@ -325,11 +326,7 @@ const SERVICES = [
     id: 'flight' as const,
     labelKey: 'hero.flight_label',
     noteKey: 'hero.flight_note',
-    icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <path d="M10.18 9 2 11l2 3 3-1 4 4-1.4 4.2L11 22l3-6 6-3a2 2 0 1 0-2-2l-3 1.5L9 8l1-3.5L8 3 6 7l-1 1z"/>
-      </svg>
-    ),
+    icon: <PlaneTakeoff size={18} strokeWidth={1.8} />,
   },
   {
     id: 'road' as const,
@@ -557,7 +554,28 @@ export function Hero() {
             </div>
           ))}
 
-          <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/30 to-transparent pointer-events-none"/>
+          {/* Top glass vignette */}
+          <div
+            className="absolute inset-x-0 top-0 h-36 pointer-events-none"
+            style={{
+              backdropFilter: 'blur(12px) saturate(150%)',
+              WebkitBackdropFilter: 'blur(12px) saturate(150%)',
+              background: 'linear-gradient(180deg, rgba(13,27,56,.40) 0%, rgba(13,27,56,.10) 55%, transparent 100%)',
+              maskImage: 'linear-gradient(180deg, black 0%, black 45%, transparent 100%)',
+              WebkitMaskImage: 'linear-gradient(180deg, black 0%, black 45%, transparent 100%)',
+            }}
+          />
+          {/* Bottom glass vignette */}
+          <div
+            className="absolute inset-x-0 bottom-0 h-48 pointer-events-none"
+            style={{
+              backdropFilter: 'blur(14px) saturate(150%)',
+              WebkitBackdropFilter: 'blur(14px) saturate(150%)',
+              background: 'linear-gradient(0deg, rgba(13,27,56,.55) 0%, rgba(13,27,56,.15) 55%, transparent 100%)',
+              maskImage: 'linear-gradient(0deg, black 0%, black 40%, transparent 100%)',
+              WebkitMaskImage: 'linear-gradient(0deg, black 0%, black 40%, transparent 100%)',
+            }}
+          />
         </div>
 
         {/* Content */}
